@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "humio.host",
+      "type": "java.lang.String",
+      "description": "Humio host, i.e. 'go.humio.com'"
+    },
+    {
+      "name": "humio.dataspace",
+      "type": "java.lang.String",
+      "description": "Name of humio dataspace"
+    },
+    {
+      "name": "humio.ingesttoken",
+      "type": "java.lang.String",
+      "description": "humio ingest token"
+    }
+  ]
+}
