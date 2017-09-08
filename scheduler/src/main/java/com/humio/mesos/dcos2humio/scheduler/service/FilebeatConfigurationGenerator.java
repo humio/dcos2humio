@@ -47,7 +47,11 @@ public class FilebeatConfigurationGenerator {
                 .flatMap(framework -> framework.getTasks().stream())
                 .filter(task -> task.getState().equals("TASK_RUNNING")) //TODO: included all tasks that are not older than one day
                 .filter(task -> task.getLabels().stream().filter(label -> "HUMIO_IGNORE" .equals(label.getKey())).map(Label::getValue).noneMatch(Boolean::parseBoolean))
-                .map(task -> ModelUtils.from(task).logFile("stdout").logFile("stderr").build())
+                .map(task -> ModelUtils.from(task)
+                        .logFile("stdout")
+                        .logFile("stderr")
+                        .type(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("HUMIO_TYPE")).map(Label::getValue).findFirst().orElse("kv"))
+                        .build())
                 .collect(Collectors.groupingBy(TaskDetails::getSlaveId))
                 .forEach((slaveId, taskDetails) -> {
                     logger.info("Updating config on {}", slaveId);

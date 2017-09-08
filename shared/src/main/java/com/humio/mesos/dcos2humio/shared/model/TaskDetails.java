@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 public class TaskDetails implements Serializable {
+    private String type;
     private String slaveId;
     private String frameworkId;
     private String frameworkName;
