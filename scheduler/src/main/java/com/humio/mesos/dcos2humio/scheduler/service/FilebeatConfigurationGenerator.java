@@ -3,6 +3,7 @@ package com.humio.mesos.dcos2humio.scheduler.service;
 import com.containersolutions.mesos.scheduler.UniversalScheduler;
 import com.containersolutions.mesos.scheduler.config.MesosConfigProperties;
 import com.humio.mesos.dcos2humio.scheduler.model.ModelUtils;
+import com.humio.mesos.dcos2humio.scheduler.model.mesos.Framework;
 import com.humio.mesos.dcos2humio.scheduler.model.mesos.Label;
 import com.humio.mesos.dcos2humio.scheduler.model.mesos.State;
 import com.humio.mesos.dcos2humio.shared.model.TaskDetails;
@@ -17,18 +18,17 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class FilebeatConfigurationGenerator {
     private static final Logger logger = LoggerFactory.getLogger(FilebeatConfigurationGenerator.class);
 
-    private final MesosConfigProperties mesosConfigProperties;
     private final RestTemplate restTemplate;
     private final UniversalScheduler universalScheduler;
 
     public FilebeatConfigurationGenerator(MesosConfigProperties mesosConfigProperties, RestTemplateBuilder restTemplateBuilder, UniversalScheduler universalScheduler) {
-        this.mesosConfigProperties = mesosConfigProperties;
         this.universalScheduler = universalScheduler;
         this.restTemplate = restTemplateBuilder.rootUri("http://" + mesosConfigProperties.getMaster()).build();
     }
@@ -43,6 +43,8 @@ public class FilebeatConfigurationGenerator {
         if (stateEntity.getBody() == null) {
             throw new RuntimeException("Mesos state responded with empty body");
         }
+        final Map<String, String> frameworkNameMap = stateEntity.getBody().getFrameworks().stream().collect(Collectors.toMap(Framework::getId, Framework::getName));
+
         stateEntity.getBody().getFrameworks().stream()
                 .flatMap(framework -> framework.getTasks().stream())
                 .filter(task -> task.getState().equals("TASK_RUNNING")) //TODO: included all tasks that are not older than one day
@@ -50,6 +52,7 @@ public class FilebeatConfigurationGenerator {
                 .map(task -> ModelUtils.from(task)
                         .logFile("stdout")
                         .logFile("stderr")
+                        .frameworkName(frameworkNameMap.get(task.getFrameworkId()))
                         .type(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("HUMIO_TYPE")).map(Label::getValue).findFirst().orElse("kv"))
                         .build())
                 .collect(Collectors.groupingBy(TaskDetails::getSlaveId))
