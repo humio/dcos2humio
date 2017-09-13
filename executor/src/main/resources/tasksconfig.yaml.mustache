@@ -16,4 +16,10 @@
     mesos_framework_id: {{frameworkId}}
     mesos_framework_name: {{frameworkName}}
     mesos_task_id: {{taskId}}
+{{#multilineEnabled}}
+  multiline:
+    pattern: '{{multilinePattern}}'
+    negate: {{multilineNegate}}
+    match: {{multilineMatch}}
+{{/multilineEnabled}}
 {{/taskDetails}}

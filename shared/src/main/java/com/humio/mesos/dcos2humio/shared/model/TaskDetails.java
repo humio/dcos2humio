@@ -16,9 +16,20 @@ public class TaskDetails implements Serializable {
     private String frameworkId;
     private String frameworkName;
     private String taskId;
+
+    @Builder.Default
+    private String multilinePattern = null;
+    @Builder.Default
+    private boolean multilineNegate = false;
+    @Builder.Default
+    private String multilineMatch = "off";
     @Singular
     private List<String> logFiles;
     private String parser;
+
+    public boolean isMultilineEnabled() {
+        return !multilineMatch.equalsIgnoreCase("off");
+    }
 
     public List<String> getAbsolutePaths() {
         return logFiles.stream()
