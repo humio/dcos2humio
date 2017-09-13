@@ -3,6 +3,8 @@ spring:
     name: Humio agent scheduler
 humio:
   host: go.humio.com
+  executor:
+    url: http://${libprocess.ip}:8000/executor-1.0-SNAPSHOT.jar
 mesos:
   framework:
     name: humio-agent
@@ -18,4 +20,4 @@ mesos:
   uri:
     - https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.6.0-linux-x86_64.tar.gz
     - https://downloads.mesosphere.com/java/jre-8u121-linux-x64.tar.gz
-    - http://${libprocess.ip}:8000/executor-1.0-SNAPSHOT.jar
+    - ${humio.executor.url}
