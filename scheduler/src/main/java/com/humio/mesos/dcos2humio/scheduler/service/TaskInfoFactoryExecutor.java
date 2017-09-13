@@ -15,8 +15,6 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-
 @Service
 public class TaskInfoFactoryExecutor implements TaskInfoFactory {
     private static final Logger logger = LoggerFactory.getLogger(TaskInfoFactoryExecutor.class);
@@ -45,8 +43,10 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                 .setTaskId(Protos.TaskID.newBuilder().setValue(taskId))
                 .addAllResources(resources)
                 .setData(ByteString.copyFromUtf8(String.join(";", humioHost, humioDataspace, humioIngesttoken)))
+                .setLabels(Protos.Labels.newBuilder().addLabels(createLabel("HUMIO_IGNORE", "true")).build())
                 .setExecutor(Protos.ExecutorInfo.newBuilder()
                         .setName("humioexecutor")
+//TODO: Group executors together with scheduler                        .setLabels(Protos.Labels.newBuilder().addLabels(createLabel("DCOS_SPACE", "/humio")).build())
                         .setExecutorId(Protos.ExecutorID.newBuilder().setValue("humioexecutor." + offer.getSlaveId().getValue()).build())
                         .setCommand(Protos.CommandInfo.newBuilder()
                                 .setValue(mesosConfig.getCommand())
@@ -54,5 +54,9 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                                 .build())
                         .build())
                 .build();
+    }
+
+    private Protos.Label createLabel(String key, String value) {
+        return Protos.Label.newBuilder().setKey(key).setValue(value).build();
     }
 }
