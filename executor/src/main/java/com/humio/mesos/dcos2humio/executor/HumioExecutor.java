@@ -8,7 +8,6 @@ import org.apache.mesos.ExecutorDriver;
 import org.apache.mesos.Protos;
 
 import java.io.*;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -50,10 +49,10 @@ public class HumioExecutor implements Executor {
         updateFileBeatConfig(emptyList());
         new Thread(() -> {
             String[] command = {
-                    "filebeat-5.5.2-linux-x86_64/filebeat",
+                    "filebeat-5.6.0-linux-x86_64/filebeat",
                     "-e",
 //                    "-E", "logging.level=debug",
-                    "-c", "filebeat-5.5.2-linux-x86_64/filebeat.yml",
+                    "-c", "filebeat-5.6.0-linux-x86_64/filebeat.yml",
                     "-path.data=/var/humio/data",
                     "-E", "filebeat.config.prospectors.path=../config/humio.yaml",
                     "-E", "filebeat.config.prospectors.reload.enabled=true",
@@ -107,7 +106,6 @@ public class HumioExecutor implements Executor {
     private static void inputStreamForEach(Consumer<String> consumer, InputStream inputStream) {
         new Thread(() -> new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer)).start();
     }
-
 
     @Override
     public void killTask(ExecutorDriver driver, Protos.TaskID taskId) {

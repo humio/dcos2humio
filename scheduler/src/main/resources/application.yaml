@@ -10,12 +10,12 @@ mesos:
   zookeeper:
     server: leader.mesos:2181
   command: |
-    jre1.8.0_121/bin/java -jar executor.jar
+    jre1.8.0_121/bin/java -jar executor-1.0-SNAPSHOT.jar
   resources:
     distinctSlave: true
     cpus: 1
     mem: 512
   uri:
-    - https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.5.2-linux-x86_64.tar.gz
+    - https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.6.0-linux-x86_64.tar.gz
     - https://downloads.mesosphere.com/java/jre-8u121-linux-x64.tar.gz
-    - http://${libprocess.ip}:8000/executor.jar
+    - http://${libprocess.ip}:8000/executor-1.0-SNAPSHOT.jar
