@@ -99,6 +99,7 @@ public class HumioExecutor implements Executor {
         driver.sendStatusUpdate(Protos.TaskStatus.newBuilder()
                 .setExecutorId(task.getExecutor().getExecutorId())
                 .setTaskId(task.getTaskId())
+                .setHealthy(true)
                 .setState(Protos.TaskState.TASK_RUNNING)
                 .build());
     }
