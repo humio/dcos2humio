@@ -5,7 +5,7 @@ humio:
   host: go.humio.com
   executor:
     version: "1.0-SNAPSHOT"
-    url: http://${libprocess.ip}:8000/executor/target/executor-${executor.version}.jar
+    url: http://${host}:8085/executor/target/executor-${humio.executor.version}.jar
     dataDir: "/var/humio/data"
 mesos:
   framework:
