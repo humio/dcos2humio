@@ -38,7 +38,7 @@ All labels are optional.
 | `HUMIO_TYPE` | `*` | Humio parser |
 | `HUMIO_MULTILINE_PATTERN` | regex | Filebeat regex|
 | `HUMIO_MULTILINE_NEGATE` | `true`,`false` | Negate…? |
-| `HUMIO_MULTILINE_MATCH` | `true`,`false` | Match…? |
+| `HUMIO_MULTILINE_MATCH` | `before`,`after` | Match…? |
 
 Log fields
 ===
