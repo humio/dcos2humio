@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 public class ModelUtils {
     public static TaskDetails.TaskDetailsBuilder from(Task task) {
         final TaskDetails.TaskDetailsBuilder taskDetailsBuilder = TaskDetails.builder()
+                .logFile("stdout")
+                .logFile("stderr")
                 .slaveId(task.getSlaveId())
                 .frameworkId(task.getFrameworkId())
                 .taskId(task.getId());

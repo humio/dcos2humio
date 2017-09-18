@@ -50,10 +50,9 @@ public class FilebeatConfigurationGenerator {
                 .filter(task -> task.getState().equals("TASK_RUNNING")) //TODO: included all tasks that are not older than one day
                 .filter(task -> task.getLabels().stream().filter(label -> "HUMIO_IGNORE" .equals(label.getKey())).map(Label::getValue).noneMatch(Boolean::parseBoolean))
                 .map(task -> ModelUtils.from(task)
-                        .logFile("stdout")
-                        .logFile("stderr")
                         .frameworkName(frameworkNameMap.get(task.getFrameworkId()))
                         .type(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("HUMIO_TYPE")).map(Label::getValue).findFirst().orElse("kv"))
+                        .dcosSpace(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("DCOS_SPACE")).map(Label::getValue).findFirst().orElse(null))
                         .build())
                 .collect(Collectors.groupingBy(TaskDetails::getSlaveId))
                 .forEach((slaveId, taskDetails) -> {
@@ -63,7 +62,6 @@ public class FilebeatConfigurationGenerator {
     }
 
     private void pushConfig(String slaveId, List<TaskDetails> taskDetails) {
-//        final byte[] data = taskDetails.stream().map(TaskDetails::toString).collect(Collectors.joining("\n")).getBytes();
         final byte[] data = SerializationUtils.serialize(((Serializable) taskDetails));
 
         universalScheduler.sendFrameworkMessage("humioexecutor." + slaveId, slaveId, data);

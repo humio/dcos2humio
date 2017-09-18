@@ -16,6 +16,7 @@ public class TaskDetails implements Serializable {
     private String frameworkId;
     private String frameworkName;
     private String taskId;
+    private String dcosSpace;
 
     @Builder.Default
     private String multilinePattern = null;
