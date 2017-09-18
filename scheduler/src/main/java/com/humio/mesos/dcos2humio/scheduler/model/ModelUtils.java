@@ -8,7 +8,6 @@ public class ModelUtils {
         return TaskDetails.builder()
                 .slaveId(task.getSlaveId())
                 .frameworkId(task.getFrameworkId())
-                .frameworkName("TODO")
                 .taskId(task.getId());
     }
 }
