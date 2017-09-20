@@ -7,14 +7,12 @@ The goal for this Mesos Framework is to first of all add support for aggregating
 
 # Getting started
 
-First of all we recommend going through the [Task configuration](#taskconfiguration) section and at least add a `HUMIO_IGNORE` label to tasks that you do not want to end up in Humio.
+First of all we recommend going through the [Task configuration](#taskconfiguration) section and at least add a `HUMIO_IGNORE` label to tasks that you do not want to end up in Humio. All other logs, in `stdout` and `stderr` are by default
+forwarded to Humio
 
 At this point two ways of deploying the framework is supported
  * Universe package
  * Marathon config
-
-By default, the agent will ship all task logs (`stdout` and `stderr` files) to Humio. If you have logs that you do
-not intent to send to Humio, please give the task a `HUMIO_IGNORE`: `true` label.
  
 ## Universe<a name="universe"></a>
 Configuration parameters for user of the dcos CLI tool
