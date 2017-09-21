@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.File;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Collection;
@@ -28,19 +27,20 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FilebeatConfigurationGeneratorTest {
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @InjectMocks
-    FilebeatConfigurationGenerator generator;
+    private FilebeatConfigurationGenerator generator;
 
     @Mock
-    MesosConfigProperties mesosConfigProperties;
+    private UniversalScheduler scheduler;
 
     @Mock
-    UniversalScheduler scheduler;
+    private Clock clock;
 
-    @Mock
-    Clock clock;
+    private static List<TaskDetails> parse(byte[] data) {
+        return SerializationUtils.deserialize(data);
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -48,34 +48,51 @@ public class FilebeatConfigurationGeneratorTest {
     }
 
     private State read() throws java.io.IOException {
-        return objectMapper.readValue(new File("/Users/mwl/IdeaProjects/Humio/state.json"), State.class);
+        return objectMapper.readValue(FilebeatConfigurationGeneratorTest.class.getResourceAsStream("/state.json"), State.class);
     }
 
     @Test
-    public void canParseJson() throws Exception {
-        final State state = read();
-        assertThat(state.getId()).isEqualTo("3dc3fb85-9a67-4efc-86b0-b7086c909428");
-    }
-
-    @Test
-    public void canFindAllRunningTasks() throws Exception {
+    public void tasksAreBeingSentToSlaves() throws Exception {
         generator.pushState(read());
-
         ArgumentCaptor<byte[]> dataArgumentCaptor = ArgumentCaptor.forClass(byte[].class);
-        verify(scheduler).sendFrameworkMessage(eq("humioexecutor.2973b31d-a899-4fc7-8448-fbe160dc292b-S0"), eq("2973b31d-a899-4fc7-8448-fbe160dc292b-S0"), dataArgumentCaptor.capture());
-        assertThat(parse(dataArgumentCaptor.getValue())).hasSize(12);
+        verify(scheduler).sendFrameworkMessage(eq("humioexecutor.private-agent-1"), eq("private-agent-1"), dataArgumentCaptor.capture());
+        assertThat(parse(dataArgumentCaptor.getValue()).stream().map(TaskDetails::getTaskId)).hasSize(3);
 
-        verify(scheduler).sendFrameworkMessage(eq("humioexecutor.4da93dca-dbdb-4796-80f5-9dfd20e7a331-S1"), eq("4da93dca-dbdb-4796-80f5-9dfd20e7a331-S1"), dataArgumentCaptor.capture());
-        assertThat(parse(dataArgumentCaptor.getValue())).hasSize(1);
+        verify(scheduler).sendFrameworkMessage(eq("humioexecutor.public-agent-1"), eq("public-agent-1"), dataArgumentCaptor.capture());
+        assertThat(parse(dataArgumentCaptor.getValue()).stream().map(TaskDetails::getTaskId)).hasSize(1);
+    }
 
-        verify(scheduler).sendFrameworkMessage(eq("humioexecutor.4da93dca-dbdb-4796-80f5-9dfd20e7a331-S0"), eq("4da93dca-dbdb-4796-80f5-9dfd20e7a331-S0"), dataArgumentCaptor.capture());
-        assertThat(parse(dataArgumentCaptor.getValue())).hasSize(8);
+    @Test
+    public void willIncludeActiveTasks() throws Exception {
+        assertThat(getAllTaskIds()).contains("active-framework-2.active-task");
     }
 
     @Test
     public void willNotIncludeIgnoredTasks() throws Exception {
-        final List<String> taskIds = getAllTaskIds();
-        assertThat(taskIds).doesNotContain("7fb745ae-f999-4341-ae97-244a173c7327", "4ed81f39-0ecf-42bd-ba46-e33a664d0383");
+        assertThat(getAllTaskIds()).doesNotContain("active-framework-2.active-ignored-task");
+    }
+
+    @Test
+    public void willNotIncludeVeryOldCompletedTasks() throws Exception {
+        assertThat(getAllTaskIds()).doesNotContain(
+                "active-framework-1.ancient-finished-task",
+                "active-framework-2.ancient-killed-scheduler-task",
+                "completed-framework-1.ancient-killed-task"
+        );
+    }
+
+    @Test
+    public void willIncludeTasksOfRecentCompletedFrameworks() throws Exception {
+        assertThat(getAllTaskIds()).contains("completed-framework-1.recent-killed-task");
+    }
+
+    @Test
+    public void willIncludeRecentCompletedTasks() throws Exception {
+        assertThat(getAllTaskIds()).contains(
+                "active-framework-1.recent-finished-task",
+                "active-framework-2.recent-killed-scheduler-task",
+                "completed-framework-1.recent-killed-task"
+        );
     }
 
     private List<String> getAllTaskIds() throws java.io.IOException {
@@ -87,24 +104,5 @@ public class FilebeatConfigurationGeneratorTest {
                 .flatMap(Collection::stream)
                 .map(TaskDetails::getTaskId)
                 .collect(Collectors.toList());
-    }
-
-    @Test
-    public void willNotIncludeVeryOldTasks() throws Exception {
-
-    }
-
-    @Test
-    public void willIncludeTasksOfRecentCompletedFrameworks() throws Exception {
-        assertThat(getAllTaskIds()).contains("hello-0-server__d59d46ef-5b09-44df-bbee-00850886e66f", "world-0-server__9c327930-4864-4d76-b028-adea8fe436a1", "world-1-server__c196c8ae-c394-459c-81af-82f6e7727306");
-    }
-
-    @Test
-    public void willIncludeRecentCompletedTasks() throws Exception {
-        assertThat(getAllTaskIds()).contains("sleeper_201709211045359tarK.ff8d546f-9eb9-11e7-9a3d-e27ca593bc80");
-    }
-
-    private static List<TaskDetails> parse(byte[] data) {
-        return SerializationUtils.deserialize(data);
     }
 }

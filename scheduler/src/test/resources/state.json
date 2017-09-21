@@ -1,0 +1,209 @@
+{
+  "version": "1.4.0",
+  "slaves": [
+    {
+      "id": "private-agent-1"
+    },
+    {
+      "id": "public-agent-1"
+    }
+  ],
+  "recovered_slaves": [],
+  "frameworks": [
+    {
+      "id": "active-framework-1",
+      "name": "metronome",
+      "tasks": [],
+      "unreachable_tasks": [],
+      "completed_tasks": [
+        {
+          "id": "active-framework-1.recent-finished-task",
+          "name": "20170921104402iyHDs.sleeper",
+          "framework_id": "active-framework-1",
+          "slave_id": "private-agent-1",
+          "state": "TASK_FINISHED",
+          "statuses": [
+            {
+              "state": "TASK_RUNNING",
+              "timestamp": 1505990643.41557
+            },
+            {
+              "state": "TASK_FINISHED",
+              "timestamp": 1505990645.82835
+            }
+          ],
+          "labels": [
+            {
+              "key": "DCOS_SPACE",
+              "value": "/sleeper/20170921104402iyHDs"
+            }
+          ]
+        },
+        {
+          "id": "active-framework-1.ancient-finished-task",
+          "name": "201709211045359tarK.sleeper",
+          "framework_id": "active-framework-1",
+          "slave_id": "private-agent-1",
+          "state": "TASK_FINISHED",
+          "statuses": [
+            {
+              "state": "TASK_RUNNING",
+              "timestamp": 1505984390.0
+            },
+            {
+              "state": "TASK_FINISHED",
+              "timestamp": 1505984392.0
+            }
+          ],
+          "labels": [
+            {
+              "key": "DCOS_SPACE",
+              "value": "/sleeper/201709211045359tarK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "active-framework-2",
+      "name": "marathon",
+      "tasks": [
+        {
+          "id": "active-framework-2.active-task",
+          "name": "marathon-lb",
+          "framework_id": "active-framework-2",
+          "slave_id": "public-agent-1",
+          "state": "TASK_RUNNING",
+          "statuses": [
+            {
+              "state": "TASK_RUNNING",
+              "timestamp": 1505739276.34539
+            }
+          ],
+          "labels": [
+            {
+              "key": "DCOS_SPACE",
+              "value": "/marathon-lb"
+            }
+          ]
+        },
+        {
+          "id": "active-framework-2.active-ignored-task",
+          "name": "marathon-lb",
+          "framework_id": "active-framework-2",
+          "slave_id": "public-agent-1",
+          "state": "TASK_RUNNING",
+          "statuses": [
+            {
+              "state": "TASK_RUNNING",
+              "timestamp": 1505739276.34539
+            }
+          ],
+          "labels": [
+            {
+              "key": "HUMIO_IGNORE",
+              "value": "true"
+            }
+          ]
+        }
+      ],
+      "unreachable_tasks": [],
+      "completed_tasks": [
+        {
+          "id": "active-framework-2.recent-killed-scheduler-task",
+          "name": "hello-world",
+          "framework_id": "active-framework-2",
+          "slave_id": "private-agent-1",
+          "state": "TASK_KILLED",
+          "statuses": [
+            {
+              "state": "TASK_RUNNING",
+              "timestamp": 1505991252.86363
+            },
+            {
+              "state": "TASK_KILLING",
+              "timestamp": 1505991388.73608
+            },
+            {
+              "state": "TASK_KILLED",
+              "timestamp": 1505991388.75139
+            }
+          ]
+        },
+        {
+          "id": "active-framework-2.ancient-killed-scheduler-task",
+          "name": "hello-world",
+          "framework_id": "active-framework-2",
+          "slave_id": "private-agent-1",
+          "state": "TASK_KILLED",
+          "statuses": [
+            {
+              "state": "TASK_RUNNING",
+              "timestamp": 1505984390.0
+            },
+            {
+              "state": "TASK_KILLING",
+              "timestamp": 1505984391.0
+            },
+            {
+              "state": "TASK_KILLED",
+              "timestamp": 1505984392.0
+            }
+          ]
+        }
+      ],
+      "offers": [],
+      "executors": []
+    }
+  ],
+  "completed_frameworks": [
+    {
+      "id": "completed-framework-1",
+      "name": "hello-world",
+      "registered_time": 1505991264.07631,
+      "unregistered_time": 1505991436.89852,
+      "reregistered_time": 1505991426.34537,
+      "tasks": [],
+      "unreachable_tasks": [],
+      "completed_tasks": [
+        {
+          "id": "completed-framework-1.recent-killed-task",
+          "name": "world-1-server",
+          "framework_id": "completed-framework-1",
+          "slave_id": "private-agent-1",
+          "state": "TASK_KILLED",
+          "statuses": [
+            {
+              "state": "TASK_RUNNING",
+              "timestamp": 1505991297.16742
+            },
+            {
+              "state": "TASK_KILLED",
+              "timestamp": 1505991434.19406
+            }
+          ]
+        },
+        {
+          "id": "completed-framework-1.ancient-killed-task",
+          "name": "world-0-server",
+          "framework_id": "completed-framework-1",
+          "slave_id": "private-agent-1",
+          "state": "TASK_KILLED",
+          "statuses": [
+            {
+              "state": "TASK_RUNNING",
+              "timestamp": 1505984390.0
+            },
+            {
+              "state": "TASK_KILLED",
+              "timestamp": 1505984392.0
+            }
+          ],
+          "labels": []
+        }
+      ]
+    }
+  ],
+  "orphan_tasks": [],
+  "unregistered_frameworks": []
+}

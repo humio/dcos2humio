@@ -7,5 +7,5 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Status {
     private String state;
-    private double timestamp;
+    private Double timestamp;
 }

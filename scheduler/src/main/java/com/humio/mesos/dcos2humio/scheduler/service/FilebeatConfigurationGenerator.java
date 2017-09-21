@@ -20,6 +20,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.Serializable;
 import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -43,11 +45,11 @@ public class FilebeatConfigurationGenerator implements InitializingBean {
     }
 
     private static Stream<Framework> getAllFrameworkStreams(State state) {
-        return Stream.of(state.getFrameworks()/*, state.getCompletedFrameworks(), state.getUnregistreredFrameworks()*/).flatMap(Collection::stream);
+        return Stream.of(state.getFrameworks(), state.getCompletedFrameworks(), state.getUnregistreredFrameworks()).flatMap(Collection::stream);
     }
 
     private static Stream<Task> getAllStateStreams(Framework framework) {
-        return Stream.of(framework.getTasks()/*, framework.getCompleted_tasks()*/).flatMap(Collection::stream);
+        return Stream.of(framework.getTasks(), framework.getCompleted_tasks()).flatMap(Collection::stream);
     }
 
     @Override
@@ -74,22 +76,31 @@ public class FilebeatConfigurationGenerator implements InitializingBean {
 
         extractTaskDetailsPerSlave(frameworkNameMap, state)
                 .forEach((slaveId, taskDetails) -> {
-                    logger.info("Updating config on {}", slaveId);
+                    logger.info("Updating config for {} task(s) on slave mesos-id={}", taskDetails.size(), slaveId);
                     pushConfig(slaveId, taskDetails);
                 });
     }
 
-    public Map<String, List<TaskDetails>> extractTaskDetailsPerSlave(Map<String, String> frameworkNameMap, State state) {
+    private Map<String, List<TaskDetails>> extractTaskDetailsPerSlave(Map<String, String> frameworkNameMap, State state) {
         return getAllFrameworkStreams(state)
                 .flatMap(FilebeatConfigurationGenerator::getAllStateStreams)
-                .filter(task -> task.getState().equals("TASK_RUNNING")) //TODO: included all tasks that are not older than one day
                 .filter(task -> task.getLabels().stream().filter(label -> "HUMIO_IGNORE".equals(label.getKey())).map(Label::getValue).noneMatch(Boolean::parseBoolean))
+                .filter(this::wasTaskRecentlyRunning)
                 .map(task -> ModelUtils.from(task)
                         .frameworkName(frameworkNameMap.get(task.getFrameworkId()))
                         .type(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("HUMIO_TYPE")).map(Label::getValue).findFirst().orElse("kv"))
                         .dcosSpace(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("DCOS_SPACE")).map(Label::getValue).findFirst().orElse(null))
                         .build())
                 .collect(Collectors.groupingBy(TaskDetails::getSlaveId));
+    }
+
+    private boolean wasTaskRecentlyRunning(Task task) {
+        if (task.getState().equals("TASK_RUNNING")) {
+            return true;
+        }
+        final Instant deadline = clock.instant().minus(Duration.ofHours(1));
+        return Instant.ofEpochSecond(task.getStatuses().get(task.getStatuses().size() - 1).getTimestamp().longValue()).isAfter(deadline);
+
     }
 
     private void pushConfig(String slaveId, List<TaskDetails> taskDetails) {
