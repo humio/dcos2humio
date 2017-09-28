@@ -10,12 +10,13 @@ humio:
 mesos:
   framework:
     name: humio-agent
+  role: "slave_public"
   master: leader.mesos:5050
   zookeeper:
     server: leader.mesos:2181
   resources:
     distinctSlave: true
-    cpus: 1
+    cpus: 0.5
     mem: 512
   webuiUrl: "http://${host}:${server.port}/home"
   uri:
