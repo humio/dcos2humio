@@ -28,6 +28,8 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
     protected String humioDataspace;
     @Value("${humio.ingesttoken}")
     protected String humioIngesttoken;
+    @Value("${humio.dataDir}")
+    protected String humioDataDir;
 
     public TaskInfoFactoryExecutor(MesosConfigProperties mesosConfig, Supplier<UUID> uuidSupplier) {
         this.mesosConfig = mesosConfig;
@@ -42,7 +44,7 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                 .setSlaveId(offer.getSlaveId())
                 .setTaskId(Protos.TaskID.newBuilder().setValue(taskId))
                 .addAllResources(resources)
-                .setData(ByteString.copyFromUtf8(String.join(";", humioHost, humioDataspace, humioIngesttoken)))
+                .setData(ByteString.copyFromUtf8(String.join(";", humioHost, humioDataspace, humioIngesttoken, humioDataDir)))
                 .setLabels(Protos.Labels.newBuilder().addLabels(createLabel("HUMIO_IGNORE", "true")).build())
                 .setExecutor(Protos.ExecutorInfo.newBuilder()
                         .setName("humioexecutor")

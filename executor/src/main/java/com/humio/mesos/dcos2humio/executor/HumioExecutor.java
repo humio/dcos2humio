@@ -46,14 +46,14 @@ public class HumioExecutor implements Executor {
         final String humioHost = data[0];
         final String humioDataspace = data[1];
         final String humioIngestToken = data[2];
+        final String dataDir = data[3];
         updateFileBeatConfig(emptyList());
         new Thread(() -> {
             String[] command = {
                     "filebeat-5.6.0-linux-x86_64/filebeat",
                     "-e",
-//                    "-E", "logging.level=debug",
                     "-c", "filebeat-5.6.0-linux-x86_64/filebeat.yml",
-                    "-path.data=/var/humio/data",
+                    "-path.data=\"" + dataDir + "\"",
                     "-E", "filebeat.config.prospectors.path=../config/humio.yaml",
                     "-E", "filebeat.config.prospectors.reload.enabled=true",
                     "-E", "filebeat.config.prospectors.reload.period=10s",
