@@ -95,6 +95,24 @@ public class FilebeatConfigurationGeneratorTest {
         );
     }
 
+    @Test
+    public void willRecogniseMarathonLbTasksAndAddMultilineLabels() throws Exception {
+        generator.pushState(read());
+        ArgumentCaptor<byte[]> dataArgumentCaptor = ArgumentCaptor.forClass(byte[].class);
+        verify(scheduler, atLeastOnce()).sendFrameworkMessage(any(), any(), dataArgumentCaptor.capture());
+        final TaskDetails marathonLbTask = dataArgumentCaptor.getAllValues().stream()
+                .map(FilebeatConfigurationGeneratorTest::parse)
+                .flatMap(Collection::stream)
+                .filter(taskDetails -> taskDetails.getTaskId().equals("active-framework-2.active-task"))
+                .findAny()
+                .orElseThrow(AssertionError::new);
+        assertThat(marathonLbTask.getType()).isEqualTo("marathon-lb");
+        assertThat(marathonLbTask.isMultilineEnabled()).isTrue();
+        assertThat(marathonLbTask.getMultilineMatch()).isEqualTo("after");
+        assertThat(marathonLbTask.getMultilinePattern()).isEqualTo("^\\\\d{4}-\\\\d{2}-\\\\d{2}\\\\s\\\\d{2}:\\\\d{2}:\\\\d{2},\\\\d{3}\\\\s");
+        assertThat(marathonLbTask.isMultilineNegate()).isTrue();
+    }
+
     private List<String> getAllTaskIds() throws java.io.IOException {
         generator.pushState(read());
         ArgumentCaptor<byte[]> dataArgumentCaptor = ArgumentCaptor.forClass(byte[].class);

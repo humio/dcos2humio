@@ -84,6 +84,10 @@
             {
               "key": "DCOS_SPACE",
               "value": "/marathon-lb"
+            },
+            {
+              "key": "DCOS_PACKAGE_NAME",
+              "value": "marathon-lb"
             }
           ]
         },

@@ -86,11 +86,21 @@ public class FilebeatConfigurationGenerator implements InitializingBean {
                 .flatMap(FilebeatConfigurationGenerator::getAllStateStreams)
                 .filter(task -> task.getLabels().stream().filter(label -> "HUMIO_IGNORE".equals(label.getKey())).map(Label::getValue).noneMatch(Boolean::parseBoolean))
                 .filter(this::wasTaskRecentlyRunning)
-                .map(task -> ModelUtils.from(task)
-                        .frameworkName(frameworkNameMap.get(task.getFrameworkId()))
-                        .type(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("HUMIO_TYPE")).map(Label::getValue).findFirst().orElse("kv"))
-                        .dcosSpace(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("DCOS_SPACE")).map(Label::getValue).findFirst().orElse(null))
-                        .build())
+                .map(task -> {
+                    final TaskDetails.TaskDetailsBuilder taskDetailsBuilder = ModelUtils.from(task)
+                            .frameworkName(frameworkNameMap.get(task.getFrameworkId()))
+                            .type(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("HUMIO_TYPE")).map(Label::getValue).findFirst().orElse("kv"))
+                            .dcosSpace(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("DCOS_SPACE")).map(Label::getValue).findFirst().orElse(null));
+                    if (task.getLabels().stream().anyMatch(label -> label.getKey().equals("DCOS_PACKAGE_NAME") && label.getValue().equals("marathon-lb"))) {
+                        taskDetailsBuilder
+                                .type("marathon-lb")
+                                .multilineNegate(true)
+                                .multilineMatch("after")
+                                .multilinePattern("^\\\\d{4}-\\\\d{2}-\\\\d{2}\\\\s\\\\d{2}:\\\\d{2}:\\\\d{2},\\\\d{3}\\\\s")
+                        ;
+                    }
+                    return taskDetailsBuilder.build();
+                })
                 .collect(Collectors.groupingBy(TaskDetails::getSlaveId));
     }
 
