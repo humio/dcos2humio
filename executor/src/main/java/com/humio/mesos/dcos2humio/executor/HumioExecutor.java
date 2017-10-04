@@ -53,7 +53,7 @@ public class HumioExecutor implements Executor {
                     "filebeat-5.6.0-linux-x86_64/filebeat",
                     "-e",
                     "-c", "filebeat-5.6.0-linux-x86_64/filebeat.yml",
-                    "-path.data=\"" + dataDir + "\"",
+                    "-path.data=" + dataDir,
                     "-E", "filebeat.config.prospectors.path=../config/humio.yaml",
                     "-E", "filebeat.config.prospectors.reload.enabled=true",
                     "-E", "filebeat.config.prospectors.reload.period=10s",
