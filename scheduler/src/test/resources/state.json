@@ -32,12 +32,11 @@
               "timestamp": 1505990645.82835
             }
           ],
-          "labels": [
-            {
-              "key": "DCOS_SPACE",
-              "value": "/sleeper/20170921104402iyHDs"
-            }
-          ]
+          "discovery": {
+            "visibility": "FRAMEWORK",
+            "name": "sleeper.20170921104402iyHDs"
+          },
+          "labels": []
         },
         {
           "id": "active-framework-1.ancient-finished-task",
@@ -55,12 +54,11 @@
               "timestamp": 1505984392.0
             }
           ],
-          "labels": [
-            {
-              "key": "DCOS_SPACE",
-              "value": "/sleeper/201709211045359tarK"
-            }
-          ]
+          "discovery": {
+            "visibility": "FRAMEWORK",
+            "name": "sleeper.201709211045359tarK"
+          },
+          "labels": []
         }
       ]
     },
@@ -80,11 +78,11 @@
               "timestamp": 1505739276.34539
             }
           ],
+          "discovery": {
+            "visibility": "FRAMEWORK",
+            "name": "marathon-lb"
+          },
           "labels": [
-            {
-              "key": "DCOS_SPACE",
-              "value": "/marathon-lb"
-            },
             {
               "key": "DCOS_PACKAGE_NAME",
               "value": "marathon-lb"

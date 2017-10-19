@@ -20,6 +20,7 @@ public class Task {
     private String slaveId;
     private String state;
     private List<Label> labels = Collections.emptyList();
+    private Discovery discovery;
 
     private Resources resources;
     private List<Status> statuses;

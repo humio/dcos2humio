@@ -3,10 +3,7 @@ package com.humio.mesos.dcos2humio.scheduler.service;
 import com.containersolutions.mesos.scheduler.UniversalScheduler;
 import com.containersolutions.mesos.scheduler.config.MesosConfigProperties;
 import com.humio.mesos.dcos2humio.scheduler.model.ModelUtils;
-import com.humio.mesos.dcos2humio.scheduler.model.mesos.Framework;
-import com.humio.mesos.dcos2humio.scheduler.model.mesos.Label;
-import com.humio.mesos.dcos2humio.scheduler.model.mesos.State;
-import com.humio.mesos.dcos2humio.scheduler.model.mesos.Task;
+import com.humio.mesos.dcos2humio.scheduler.model.mesos.*;
 import com.humio.mesos.dcos2humio.shared.model.TaskDetails;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
@@ -25,6 +22,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -86,11 +84,11 @@ public class FilebeatConfigurationGenerator implements InitializingBean {
                 .flatMap(FilebeatConfigurationGenerator::getAllStateStreams)
                 .filter(task -> task.getLabels().stream().filter(label -> "HUMIO_IGNORE".equals(label.getKey())).map(Label::getValue).noneMatch(Boolean::parseBoolean))
                 .filter(this::wasTaskRecentlyRunning)
-                .map(task -> {
+                .map((Task task) -> {
                     final TaskDetails.TaskDetailsBuilder taskDetailsBuilder = ModelUtils.from(task)
                             .frameworkName(frameworkNameMap.get(task.getFrameworkId()))
                             .type(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("HUMIO_TYPE")).map(Label::getValue).findFirst().orElse("kv"))
-                            .dcosSpace(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("DCOS_SPACE")).map(Label::getValue).findFirst().orElse(null));
+                            .serviceId(Optional.ofNullable(task.getDiscovery()).map(discovery -> "/" + discovery.getName()).orElse(null));
                     if (task.getLabels().stream().anyMatch(label -> label.getKey().equals("DCOS_PACKAGE_NAME") && label.getValue().equals("marathon-lb"))) {
                         taskDetailsBuilder
                                 .type("marathon-lb")
