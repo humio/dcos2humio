@@ -94,7 +94,7 @@ public class FilebeatConfigurationGenerator implements InitializingBean {
                                 .type("marathon-lb")
                                 .multilineNegate(true)
                                 .multilineMatch("after")
-                                .multilinePattern("^\\\\d{4}-\\\\d{2}-\\\\d{2}\\\\s\\\\d{2}:\\\\d{2}:\\\\d{2},\\\\d{3}\\\\s")
+                                .multilinePattern("^\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3}\\s")
                         ;
                     }
                     return taskDetailsBuilder.build();

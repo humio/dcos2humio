@@ -110,7 +110,7 @@ public class FilebeatConfigurationGeneratorTest {
         assertThat(marathonLbTask.isMultilineEnabled()).isTrue();
         assertThat(marathonLbTask.getServiceId()).isEqualTo("/marathon-lb");
         assertThat(marathonLbTask.getMultilineMatch()).isEqualTo("after");
-        assertThat(marathonLbTask.getMultilinePattern()).isEqualTo("^\\\\d{4}-\\\\d{2}-\\\\d{2}\\\\s\\\\d{2}:\\\\d{2}:\\\\d{2},\\\\d{3}\\\\s");
+        assertThat(marathonLbTask.getMultilinePattern()).isEqualTo("^\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3}\\s");
         assertThat(marathonLbTask.isMultilineNegate()).isTrue();
     }
 
