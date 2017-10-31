@@ -7,17 +7,20 @@ import org.apache.mesos.Executor;
 import org.apache.mesos.ExecutorDriver;
 import org.apache.mesos.Protos;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
 public class HumioExecutor implements Executor {
+    AtomicBoolean runningFlag = new AtomicBoolean(true);
     private Mustache mustache;
     private String slaveId;
+    private List<ProcessLauncher> processes;
 
     public HumioExecutor(Mustache mustache) {
         this.mustache = mustache;
@@ -42,75 +45,85 @@ public class HumioExecutor implements Executor {
     @Override
     public void launchTask(ExecutorDriver driver, Protos.TaskInfo task) {
         final String[] data = task.getData().toStringUtf8().split(";");
-        System.out.println("task.getData().toStringUtf8() = " + task.getData().toStringUtf8());
         final String humioHost = data[0];
         final String humioDataspace = data[1];
         final String humioIngestToken = data[2];
-        final String dataDir = data[3];
+        final File dataDir = new File(data[3]);
+        final File filebeatDataDir = new File(dataDir, "filebeat");
+        final File metricbeatDataDir = new File(dataDir, "metricbeat");
+        final File filebeatWorkingDir = new File(".", "filebeat");
+        final File metricbeatWorkingDir = new File(".", "metricbeat");
+
         updateFileBeatConfig(emptyList());
+
+        processes = asList(
+                new ProcessLauncher(filebeatWorkingDir,
+                        "filebeat-5.6.0-linux-x86_64/filebeat", //TODO: upgrade to 5.6.3. Parametize?
+                        "-c", "filebeat-5.6.0-linux-x86_64/filebeat.yml",
+                        "-path.data=" + filebeatDataDir.getAbsolutePath(),
+                        "-E", "filebeat.config.prospectors.path=../config/humio.yaml",
+                        "-E", "filebeat.config.prospectors.reload.enabled=true",
+                        "-E", "filebeat.config.prospectors.reload.period=10s",
+                        "-E", "output.elasticsearch.hosts=[\"https://" + humioHost + ":443/api/v1/dataspaces/" + humioDataspace + "/ingest/elasticsearch\"]",
+                        "-E", "output.elasticsearch.username=" + humioIngestToken,
+                        "-E", "output.elasticsearch.compression_level=5",
+                        "-E", "output.elasticsearch.bulk_max_size=200"
+                ),
+                new ProcessLauncher(metricbeatWorkingDir, "metricbeat-5.6.0-linux-x86_64/metricbeat",
+                        "-path.data=" + metricbeatDataDir.getAbsolutePath(),
+                        "-c", "metricbeat-5.6.0-linux-x86_64/metricbeat.yml",
+                        "-E", "\"name=" + slaveId + "\"",
+                        "-E", "output.elasticsearch.hosts=[\"https://" + humioHost + ":443/api/v1/dataspaces/" + humioDataspace + "/ingest/elasticsearch\"]",
+                        "-E", "output.elasticsearch.username=" + humioIngestToken
+                )
+        );
+
+        sendStatusUpdate(driver, task, Protos.TaskState.TASK_RUNNING, false);
+
         new Thread(() -> {
-            String[] command = {
-                    "filebeat-5.6.0-linux-x86_64/filebeat",
-                    "-e",
-                    "-c", "filebeat-5.6.0-linux-x86_64/filebeat.yml",
-                    "-path.data=" + dataDir,
-                    "-E", "filebeat.config.prospectors.path=../config/humio.yaml",
-                    "-E", "filebeat.config.prospectors.reload.enabled=true",
-                    "-E", "filebeat.config.prospectors.reload.period=10s",
-                    "-E", "output.elasticsearch.hosts=[\"https://" + humioHost + ":443/api/v1/dataspaces/" + humioDataspace + "/ingest/elasticsearch\"]",
-                    "-E", "output.elasticsearch.username=" + humioIngestToken,
-                    "-E", "output.elasticsearch.compression_level=5",
-                    "-E", "output.elasticsearch.bulk_max_size=200"
-            };
-            final Process process;
-            try {
-                System.out.println("Starting " + Stream.of(command).collect(Collectors.joining(" ")));
-                process = Runtime.getRuntime().exec(command);
-                inputStreamForEach(System.out::println, process.getInputStream());
-                inputStreamForEach(System.err::println, process.getErrorStream());
-
-                process.waitFor();
-                System.out.println("Command terminated with exit=" + process.exitValue());
-                if (process.exitValue() == 0) {
-                    driver.sendStatusUpdate(Protos.TaskStatus.newBuilder()
-                            .setExecutorId(task.getExecutor().getExecutorId())
-                            .setTaskId(task.getTaskId())
-                            .setState(Protos.TaskState.TASK_FINISHED)
-                            .build());
-                } else {
-                    driver.sendStatusUpdate(Protos.TaskStatus.newBuilder()
-                            .setExecutorId(task.getExecutor().getExecutorId())
-                            .setTaskId(task.getTaskId())
-                            .setState(Protos.TaskState.TASK_FAILED)
-                            .build());
-                    throw new RuntimeException("Filebeat exited with value=" + process.exitValue());
+            AtomicBoolean isHealthy = new AtomicBoolean(false);
+            while (runningFlag.get()) {
+                processes.stream()
+                        .filter(ProcessLauncher::isNotRunning)
+                        .peek(processLauncher -> {
+                            if (processLauncher.hasFinished()) {
+                                System.out.println("Process finished");
+                            } else if (processLauncher.hasFailed()) {
+                                System.out.println("Process failed with exitcode " + processLauncher.exitValue());
+                            }
+                        })
+                        .forEach(ProcessLauncher::start);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException | InterruptedException e) {
-                driver.sendStatusUpdate(Protos.TaskStatus.newBuilder()
-                        .setExecutorId(task.getExecutor().getExecutorId())
-                        .setTaskId(task.getTaskId())
-                        .setState(Protos.TaskState.TASK_FAILED)
-                        .build());
-                e.printStackTrace();
+
+                final boolean currentHealth = processes.stream().anyMatch(ProcessLauncher::isHealthy);
+                if (currentHealth != isHealthy.get()) {
+                    sendStatusUpdate(driver, task, Protos.TaskState.TASK_RUNNING, currentHealth);
+                }
+                isHealthy.set(currentHealth);
             }
-
+            processes.forEach(ProcessLauncher::stop);
+            sendStatusUpdate(driver, task, Protos.TaskState.TASK_FINISHED, false);
         }).start();
+    }
 
+    protected void sendStatusUpdate(ExecutorDriver driver, Protos.TaskInfo task, Protos.TaskState state, boolean healthy) {
         driver.sendStatusUpdate(Protos.TaskStatus.newBuilder()
                 .setExecutorId(task.getExecutor().getExecutorId())
                 .setTaskId(task.getTaskId())
-                .setHealthy(true)
-                .setState(Protos.TaskState.TASK_RUNNING)
+                .setHealthy(healthy)
+                .setState(state)
                 .build());
-    }
-
-    private static void inputStreamForEach(Consumer<String> consumer, InputStream inputStream) {
-        new Thread(() -> new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer)).start();
     }
 
     @Override
     public void killTask(ExecutorDriver driver, Protos.TaskID taskId) {
         System.out.println("HumioExecutor.killTask");
+        runningFlag.set(false);
+        processes.forEach(ProcessLauncher::stop);
     }
 
     @Override
@@ -132,6 +145,8 @@ public class HumioExecutor implements Executor {
     @Override
     public void shutdown(ExecutorDriver driver) {
         System.out.println("HumioExecutor.shutdown");
+        runningFlag.set(false);
+        processes.forEach(ProcessLauncher::stop);
     }
 
     @Override
