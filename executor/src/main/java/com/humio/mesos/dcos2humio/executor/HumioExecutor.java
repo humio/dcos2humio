@@ -58,8 +58,8 @@ public class HumioExecutor implements Executor {
 
         processes = asList(
                 new ProcessLauncher(filebeatWorkingDir,
-                        "filebeat-5.6.0-linux-x86_64/filebeat", //TODO: upgrade to 5.6.3. Parametize?
-                        "-c", "filebeat-5.6.0-linux-x86_64/filebeat.yml",
+                        "filebeat-5.6.3-linux-x86_64/filebeat", //TODO: upgrade to 5.6.3. Parametize?
+                        "-c", "filebeat-5.6.3-linux-x86_64/filebeat.yml",
                         "-path.data=" + filebeatDataDir.getAbsolutePath(),
                         "-E", "filebeat.config.prospectors.path=../config/humio.yaml",
                         "-E", "filebeat.config.prospectors.reload.enabled=true",
@@ -69,9 +69,9 @@ public class HumioExecutor implements Executor {
                         "-E", "output.elasticsearch.compression_level=5",
                         "-E", "output.elasticsearch.bulk_max_size=200"
                 ),
-                new ProcessLauncher(metricbeatWorkingDir, "metricbeat-5.6.0-linux-x86_64/metricbeat",
+                new ProcessLauncher(metricbeatWorkingDir, "metricbeat-5.6.3-linux-x86_64/metricbeat",
                         "-path.data=" + metricbeatDataDir.getAbsolutePath(),
-                        "-c", "metricbeat-5.6.0-linux-x86_64/metricbeat.yml",
+                        "-c", "metricbeat-5.6.3-linux-x86_64/metricbeat.yml",
                         "-E", "name=" + slaveId,
                         "-E", "output.elasticsearch.hosts=[\"https://" + humioHost + ":443/api/v1/dataspaces/" + humioDataspace + "/ingest/elasticsearch\"]",
                         "-E", "output.elasticsearch.username=" + humioIngestToken
