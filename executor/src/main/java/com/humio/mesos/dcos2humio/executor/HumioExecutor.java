@@ -72,7 +72,7 @@ public class HumioExecutor implements Executor {
                 new ProcessLauncher(metricbeatWorkingDir, "metricbeat-5.6.0-linux-x86_64/metricbeat",
                         "-path.data=" + metricbeatDataDir.getAbsolutePath(),
                         "-c", "metricbeat-5.6.0-linux-x86_64/metricbeat.yml",
-                        "-E", "\"name=" + slaveId + "\"",
+                        "-E", "name=" + slaveId,
                         "-E", "output.elasticsearch.hosts=[\"https://" + humioHost + ":443/api/v1/dataspaces/" + humioDataspace + "/ingest/elasticsearch\"]",
                         "-E", "output.elasticsearch.username=" + humioIngestToken
                 )
