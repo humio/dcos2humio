@@ -16,8 +16,8 @@ mesos:
     server: leader.mesos:2181
   resources:
     distinctSlave: true
-    cpus: 0.5
-    mem: 512
+    cpus: 0.1
+    mem: 128
   webuiUrl: "http://${host}:${server.port}/home"
   uri:
     - https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.6.3-linux-x86_64.tar.gz
