@@ -32,7 +32,7 @@ The least recommended Marathon configuration should look something like this.
 
 ```json
 {
-  "id": "humio-agent",
+  "id": "/humio-agent",
   "instances": 1,
   "cpus": 0.5,
   "mem": 512,
@@ -74,7 +74,7 @@ The least recommended Marathon configuration should look something like this.
   "healthChecks": [
     {
       "protocol": "HTTP",
-      "path": "/application/health",
+      "path": "/application/status",
       "gracePeriodSeconds": 900,
       "intervalSeconds": 10,
       "portIndex": 0,
@@ -105,13 +105,13 @@ Log fields
 
 The agent will add the following fields to each log entry
 
-| Field name                 | Description                                                       |
-|----------------------------|-------------------------------------------------------------------|
-| `mesos_framework_slave_id` | Mesos slave id                                                    |
-| `mesos_framework_id`       | Mesos framework id                                                |
-| `mesos_framework_name`     | Mesos framework name                                              |
-| `mesos_task_id`            | Mesos task id                                                     |
-| `dcos_space`               | For DC/OS deployment, the agent will provide a DC/OS service name |
+| Field name             | Description                                                        |
+|------------------------|--------------------------------------------------------------------|
+| `mesos_slave_id`       | Mesos slave id                                                     |
+| `mesos_framework_id`   | Mesos framework id                                                 |
+| `mesos_framework_name` | Mesos framework name                                               |
+| `mesos_task_id`        | Mesos task id                                                      |
+| `mesos_service_id`     | For DC/OS deployments, the agent will provide a DC/OS service name |
 
 Known limitations
 ===
@@ -120,5 +120,4 @@ Known limitations
 
 Road map
 ===
-* Harvest system metrics. humio/dcos2humio#9
 * Forward DC/OS metrics. humio/dcos2humio#3
