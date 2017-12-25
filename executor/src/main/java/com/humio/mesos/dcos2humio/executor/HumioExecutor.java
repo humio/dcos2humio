@@ -2,6 +2,8 @@ package com.humio.mesos.dcos2humio.executor;
 
 import com.github.mustachejava.Mustache;
 import com.humio.mesos.dcos2humio.shared.model.TaskDetails;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.mesos.Executor;
 import org.apache.mesos.ExecutorDriver;
@@ -10,6 +12,7 @@ import org.apache.mesos.Protos;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -49,6 +52,8 @@ public class HumioExecutor implements Executor {
         final String humioDataspace = data[1];
         final String humioIngestToken = data[2];
         final File dataDir = new File(data[3]);
+        final File filebeatConfig = copyConfigFile(data[4], "filebeat.yaml");
+        final File metricbeatConfig = copyConfigFile(data[5], "metricbeat.yaml");
         final File filebeatDataDir = new File(dataDir, "filebeat");
         final File metricbeatDataDir = new File(dataDir, "metricbeat");
         final File filebeatWorkingDir = new File(".", "filebeat");
@@ -59,7 +64,7 @@ public class HumioExecutor implements Executor {
         processes = asList(
                 new ProcessLauncher(filebeatWorkingDir,
                         "filebeat-5.6.3-linux-x86_64/filebeat", //TODO: upgrade to 5.6.3. Parametize?
-                        "-c", "filebeat-5.6.3-linux-x86_64/filebeat.yml",
+                        "-c", filebeatConfig != null ? filebeatConfig.getAbsolutePath() : "filebeat-5.6.3-linux-x86_64/filebeat.yml",
                         "-path.data=" + filebeatDataDir.getAbsolutePath(),
                         "-E", "filebeat.config.prospectors.path=../config/humio.yaml",
                         "-E", "filebeat.config.prospectors.reload.enabled=true",
@@ -71,7 +76,7 @@ public class HumioExecutor implements Executor {
                 ),
                 new ProcessLauncher(metricbeatWorkingDir, "metricbeat-5.6.3-linux-x86_64/metricbeat",
                         "-path.data=" + metricbeatDataDir.getAbsolutePath(),
-                        "-c", "metricbeat-5.6.3-linux-x86_64/metricbeat.yml",
+                        "-c", metricbeatConfig != null ? metricbeatConfig.getAbsolutePath() : "metricbeat-5.6.3-linux-x86_64/metricbeat.yml",
                         "-E", "name=" + slaveId,
                         "-E", "output.elasticsearch.hosts=[\"https://" + humioHost + ":443/api/v1/dataspaces/" + humioDataspace + "/ingest/elasticsearch\"]",
                         "-E", "output.elasticsearch.username=" + humioIngestToken
@@ -140,6 +145,19 @@ public class HumioExecutor implements Executor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private File copyConfigFile(String configUrl, String filename) {
+        File configFile = null;
+        if (!configUrl.isEmpty()) {
+            configFile = new File("config/".concat(filename));
+            try {
+                FileUtils.copyURLToFile(new URL(configUrl), configFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return configFile;
     }
 
     @Override

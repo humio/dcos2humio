@@ -11,15 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
 public class TaskInfoFactoryExecutor implements TaskInfoFactory {
     private static final Logger logger = LoggerFactory.getLogger(TaskInfoFactoryExecutor.class);
     private final MesosConfigProperties mesosConfig;
-    private final Supplier<UUID> uuidSupplier;
     @Value("${spring.application.name}")
     protected String applicationName;
     @Value("${humio.host}")
@@ -30,10 +27,13 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
     protected String humioIngesttoken;
     @Value("${humio.dataDir}")
     protected String humioDataDir;
+    @Value("${humio.filebeat.configUrl:}")
+    protected String filebeatConfigUrl;
+    @Value("${humio.metricbeat.configUrl:}")
+    protected String metricbeatConfigUrl;
 
-    public TaskInfoFactoryExecutor(MesosConfigProperties mesosConfig, Supplier<UUID> uuidSupplier) {
+    public TaskInfoFactoryExecutor(MesosConfigProperties mesosConfig) {
         this.mesosConfig = mesosConfig;
-        this.uuidSupplier = uuidSupplier;
     }
 
     @Override
@@ -44,20 +44,23 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                 .setSlaveId(offer.getSlaveId())
                 .setTaskId(Protos.TaskID.newBuilder().setValue(taskId))
                 .addAllResources(resources)
-                .setData(ByteString.copyFromUtf8(String.join(";", humioHost, humioDataspace, humioIngesttoken, humioDataDir)))
+                .setData(ByteString.copyFromUtf8(String.join(";", humioHost, humioDataspace, humioIngesttoken,
+                    humioDataDir, filebeatConfigUrl, metricbeatConfigUrl)))
                 .setLabels(Protos.Labels.newBuilder().addLabels(createLabel("HUMIO_IGNORE", "true")).build())
                 .setDiscovery(Protos.DiscoveryInfo.newBuilder()
-                        .setName(applicationName)
-                        .setVisibility(Protos.DiscoveryInfo.Visibility.FRAMEWORK)
-                        .build())
+                    .setName(applicationName)
+                    .setVisibility(Protos.DiscoveryInfo.Visibility.FRAMEWORK)
+                    .build())
                 .setExecutor(Protos.ExecutorInfo.newBuilder()
-                        .setName("humioexecutor")
-                        .setExecutorId(Protos.ExecutorID.newBuilder().setValue("humioexecutor." + offer.getSlaveId().getValue()).build())
-                        .setCommand(Protos.CommandInfo.newBuilder()
-                                .setValue("jre*/bin/java -jar executor-*.jar")
-                                .addAllUris(mesosConfig.getUri().stream().map(uri -> Protos.CommandInfo.URI.newBuilder().setValue(uri).build()).collect(Collectors.toList()))
-                                .build())
+                    .setName("humioexecutor")
+                    .setExecutorId(Protos.ExecutorID.newBuilder().setValue("humioexecutor." + offer.getSlaveId()
+                        .getValue()).build())
+                    .setCommand(Protos.CommandInfo.newBuilder()
+                        .setValue("jre*/bin/java -jar executor-*.jar")
+                                .addAllUris(mesosConfig.getUri().stream().map(uri -> Protos.CommandInfo.URI
+                                    .newBuilder().setValue(uri).build()).collect(Collectors.toList()))
                         .build())
+                    .build())
                 .build();
     }
 

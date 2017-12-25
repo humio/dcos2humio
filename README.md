@@ -87,6 +87,14 @@ The least recommended Marathon configuration should look something like this.
 
 Don't forget to replace `{{humio.[host|dataspace|ingestToken]}}` as explained in [Universe](#Universe)
 
+# Elastic beat configuration
+Customize own configuration of beats. All variables are optional.
+
+| Environment variable         | Allowed value                       | Description                                                                                  |
+|------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------|
+| `HUMIO_FILEBEAT_CONFIGURL`   | url: http://example/filebeat.yml    | See https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-configuration.html
+| `HUMIO_METRICBEAT_CONFIGURL` | url: http://example/metricbeat.yml  | See https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-configuration.html                                 |
+
 # Task configuration<a name="taskconfiguration"></a>
 Configuration of tasks is managed via Mesos Task Labels. All labels are optional.
 
