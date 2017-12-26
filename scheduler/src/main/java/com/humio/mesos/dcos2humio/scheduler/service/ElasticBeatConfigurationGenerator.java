@@ -27,15 +27,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class FilebeatConfigurationGenerator implements InitializingBean {
-    private static final Logger logger = LoggerFactory.getLogger(FilebeatConfigurationGenerator.class);
+public class ElasticBeatConfigurationGenerator implements InitializingBean {
+    private static final Logger logger = LoggerFactory.getLogger(ElasticBeatConfigurationGenerator.class);
     private final MesosConfigProperties mesosConfigProperties;
     private final RestTemplateBuilder restTemplateBuilder;
     private final UniversalScheduler universalScheduler;
     private final Clock clock;
     private RestTemplate restTemplate;
 
-    public FilebeatConfigurationGenerator(MesosConfigProperties mesosConfigProperties, RestTemplateBuilder restTemplateBuilder, UniversalScheduler universalScheduler, Clock clock) {
+    public ElasticBeatConfigurationGenerator(MesosConfigProperties mesosConfigProperties, RestTemplateBuilder
+        restTemplateBuilder, UniversalScheduler universalScheduler, Clock clock) {
         this.mesosConfigProperties = mesosConfigProperties;
         this.universalScheduler = universalScheduler;
         this.clock = clock;
@@ -57,7 +58,7 @@ public class FilebeatConfigurationGenerator implements InitializingBean {
 
     @Scheduled(fixedDelay = 10000L)
     public void updateConfig() {
-        logger.info("Updating Filebeat configuration");
+        logger.info("Updating Elastic beat configuration");
         final ResponseEntity<State> stateEntity = restTemplate.getForEntity("/state", State.class);
         if (stateEntity.getStatusCode().isError()) {
             throw new RuntimeException("Failed to fetch Mesos state: " + stateEntity.getStatusCode().getReasonPhrase());
@@ -81,7 +82,7 @@ public class FilebeatConfigurationGenerator implements InitializingBean {
 
     private Map<String, List<TaskDetails>> extractTaskDetailsPerSlave(Map<String, String> frameworkNameMap, State state) {
         return getAllFrameworkStreams(state)
-                .flatMap(FilebeatConfigurationGenerator::getAllStateStreams)
+                .flatMap(ElasticBeatConfigurationGenerator::getAllStateStreams)
                 .filter(task -> task.getLabels().stream().filter(label -> "HUMIO_IGNORE".equals(label.getKey())).map(Label::getValue).noneMatch(Boolean::parseBoolean))
                 .filter(this::wasTaskRecentlyRunning)
                 .map((Task task) -> {

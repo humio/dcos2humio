@@ -25,11 +25,25 @@
           "statuses": [
             {
               "state": "TASK_RUNNING",
-              "timestamp": 1505990643.41557
+              "timestamp": 1505990643.41557,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edae7b18-a73d-4ee8-833f-336fc8ad5633"
+                    }
+                }
             },
             {
               "state": "TASK_FINISHED",
-              "timestamp": 1505990645.82835
+              "timestamp": 1505990645.82835,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edae7b18-a73d-4ee8-833f-336fc8ad5633"
+                    }
+                }
             }
           ],
           "discovery": {
@@ -47,11 +61,25 @@
           "statuses": [
             {
               "state": "TASK_RUNNING",
-              "timestamp": 1505984390.0
+              "timestamp": 1505984390.0,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "ed3e7b28-av4d-3ee8-f33g-336fb8ac5633"
+                    }
+                }
             },
             {
               "state": "TASK_FINISHED",
-              "timestamp": 1505984392.0
+              "timestamp": 1505984392.0,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "ed3e7b28-av4d-3ee8-f33g-336fb8ac5633"
+                    }
+                }
             }
           ],
           "discovery": {
@@ -75,7 +103,14 @@
           "statuses": [
             {
               "state": "TASK_RUNNING",
-              "timestamp": 1505739276.34539
+              "timestamp": 1505739276.34539,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edae7bs8-a74d-4ee8-8d3f-336fc8ac5633"
+                    }
+                }
             }
           ],
           "discovery": {
@@ -98,7 +133,14 @@
           "statuses": [
             {
               "state": "TASK_RUNNING",
-              "timestamp": 1505739276.34539
+              "timestamp": 1505739276.34539,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edde7bc8-ag4d-4de8-sd3f-336fc8ac5633"
+                    }
+                }
             }
           ],
           "labels": [
@@ -120,15 +162,36 @@
           "statuses": [
             {
               "state": "TASK_RUNNING",
-              "timestamp": 1505991252.86363
+              "timestamp": 1505991252.86363,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edaegbs8-a74s-4ee8-dd3f-336fc8ac5633"
+                    }
+                }
             },
             {
               "state": "TASK_KILLING",
-              "timestamp": 1505991388.73608
-            },
+              "timestamp": 1505991388.73608,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edaegbs8-a74s-4ee8-dd3f-336fc8ac5633"
+                    }
+                }
+              },
             {
               "state": "TASK_KILLED",
-              "timestamp": 1505991388.75139
+              "timestamp": 1505991388.75139,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edaegbs8-a74s-4ee8-dd3f-336fc8ac5633"
+                    }
+                }
             }
           ]
         },
@@ -141,15 +204,36 @@
           "statuses": [
             {
               "state": "TASK_RUNNING",
-              "timestamp": 1505984390.0
+              "timestamp": 1505984390.0,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edaesbs8-a74d-aee8-8d3f-336fc8as5633"
+                    }
+                }
             },
             {
               "state": "TASK_KILLING",
-              "timestamp": 1505984391.0
+              "timestamp": 1505984391.0,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edaesbs8-a74d-aee8-8d3f-336fc8as5633"
+                    }
+                }
             },
             {
               "state": "TASK_KILLED",
-              "timestamp": 1505984392.0
+              "timestamp": 1505984392.0,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edaesbs8-a74d-aee8-8d3f-336fc8as5633"
+                    }
+                }
             }
           ]
         }
@@ -177,11 +261,25 @@
           "statuses": [
             {
               "state": "TASK_RUNNING",
-              "timestamp": 1505991297.16742
+              "timestamp": 1505991297.16742,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edae7b18-a74d-3ea8-833f-336fd8ac5633"
+                    }
+                }
             },
             {
               "state": "TASK_KILLED",
-              "timestamp": 1505991434.19406
+              "timestamp": 1505991434.19406,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edae7b18-a74d-3ea8-833f-336fd8ac5633"
+                    }
+                }
             }
           ]
         },
@@ -194,11 +292,25 @@
           "statuses": [
             {
               "state": "TASK_RUNNING",
-              "timestamp": 1505984390.0
+              "timestamp": 1505984390.0,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edae7b18-a74d-3ea8-833f-336fc8ac5633"
+                    }
+                }
             },
             {
               "state": "TASK_KILLED",
-              "timestamp": 1505984392.0
+              "timestamp": 1505984392.0,
+              "container_status":
+                {
+                  "container_id":
+                    {
+                      "value": "edae7b18-a74d-3ea8-833f-336fc8ac5633"
+                    }
+                }
             }
           ],
           "labels": []

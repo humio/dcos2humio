@@ -1,7 +1,6 @@
 package com.humio.mesos.dcos2humio.scheduler.service;
 
 import com.containersolutions.mesos.scheduler.UniversalScheduler;
-import com.containersolutions.mesos.scheduler.config.MesosConfigProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.humio.mesos.dcos2humio.scheduler.model.mesos.State;
 import com.humio.mesos.dcos2humio.shared.model.TaskDetails;
@@ -26,11 +25,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class FilebeatConfigurationGeneratorTest {
+public class ElasticBeatConfigurationGeneratorTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @InjectMocks
-    private FilebeatConfigurationGenerator generator;
+    private ElasticBeatConfigurationGenerator generator;
 
     @Mock
     private UniversalScheduler scheduler;
@@ -48,7 +47,7 @@ public class FilebeatConfigurationGeneratorTest {
     }
 
     private State read() throws java.io.IOException {
-        return objectMapper.readValue(FilebeatConfigurationGeneratorTest.class.getResourceAsStream("/state.json"), State.class);
+        return objectMapper.readValue(ElasticBeatConfigurationGeneratorTest.class.getResourceAsStream("/state.json"), State.class);
     }
 
     @Test
@@ -101,7 +100,7 @@ public class FilebeatConfigurationGeneratorTest {
         ArgumentCaptor<byte[]> dataArgumentCaptor = ArgumentCaptor.forClass(byte[].class);
         verify(scheduler, atLeastOnce()).sendFrameworkMessage(any(), any(), dataArgumentCaptor.capture());
         final TaskDetails marathonLbTask = dataArgumentCaptor.getAllValues().stream()
-                .map(FilebeatConfigurationGeneratorTest::parse)
+                .map(ElasticBeatConfigurationGeneratorTest::parse)
                 .flatMap(Collection::stream)
                 .filter(taskDetails -> taskDetails.getTaskId().equals("active-framework-2.active-task"))
                 .findAny()
@@ -119,7 +118,7 @@ public class FilebeatConfigurationGeneratorTest {
         ArgumentCaptor<byte[]> dataArgumentCaptor = ArgumentCaptor.forClass(byte[].class);
         verify(scheduler, atLeastOnce()).sendFrameworkMessage(any(), any(), dataArgumentCaptor.capture());
         return dataArgumentCaptor.getAllValues().stream()
-                .map(FilebeatConfigurationGeneratorTest::parse)
+                .map(ElasticBeatConfigurationGeneratorTest::parse)
                 .flatMap(Collection::stream)
                 .map(TaskDetails::getTaskId)
                 .collect(Collectors.toList());

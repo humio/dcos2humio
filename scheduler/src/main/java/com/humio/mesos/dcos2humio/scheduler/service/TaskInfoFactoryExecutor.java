@@ -4,6 +4,7 @@ import com.containersolutions.mesos.scheduler.ExecutionParameters;
 import com.containersolutions.mesos.scheduler.TaskInfoFactory;
 import com.containersolutions.mesos.scheduler.config.MesosConfigProperties;
 import com.google.protobuf.ByteString;
+
 import org.apache.mesos.Protos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 @Service
 public class TaskInfoFactoryExecutor implements TaskInfoFactory {
@@ -45,7 +48,7 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                 .setTaskId(Protos.TaskID.newBuilder().setValue(taskId))
                 .addAllResources(resources)
                 .setData(ByteString.copyFromUtf8(String.join(";", humioHost, humioDataspace, humioIngesttoken,
-                    humioDataDir, filebeatConfigUrl, metricbeatConfigUrl)))
+                    humioDataDir, defaultIfEmpty(filebeatConfigUrl, " "), defaultIfEmpty(metricbeatConfigUrl, " "))))
                 .setLabels(Protos.Labels.newBuilder().addLabels(createLabel("HUMIO_IGNORE", "true")).build())
                 .setDiscovery(Protos.DiscoveryInfo.newBuilder()
                     .setName(applicationName)
@@ -57,11 +60,11 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                         .getValue()).build())
                     .setCommand(Protos.CommandInfo.newBuilder()
                         .setValue("jre*/bin/java -jar executor-*.jar")
-                                .addAllUris(mesosConfig.getUri().stream().map(uri -> Protos.CommandInfo.URI
-                                    .newBuilder().setValue(uri).build()).collect(Collectors.toList()))
+                        .addAllUris(mesosConfig.getUri().stream().map(uri -> Protos.CommandInfo.URI
+                            .newBuilder().setValue(uri).build()).collect(Collectors.toList()))
                         .build())
                     .build())
-                .build();
+            .build();
     }
 
     private Protos.Label createLabel(String key, String value) {

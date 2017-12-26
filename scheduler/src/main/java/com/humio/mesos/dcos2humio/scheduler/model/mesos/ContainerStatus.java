@@ -7,9 +7,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Status {
-    private String state;
-    private Double timestamp;
-    @JsonProperty("container_status")
-    private ContainerStatus containerStatus;
+public class ContainerStatus {
+    @JsonProperty("container_id")
+    private ContainerId containerId;
 }

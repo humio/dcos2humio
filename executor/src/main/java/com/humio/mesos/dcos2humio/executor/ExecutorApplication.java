@@ -17,9 +17,10 @@ public class ExecutorApplication {
         }
 
         MustacheFactory mustacheFactory = new DefaultMustacheFactory();
-        final Mustache mustache = mustacheFactory.compile("tasksconfig.yaml.mustache");
+        final Mustache filebeatMustache = mustacheFactory.compile("filebeat.yaml.mustache");
+        final Mustache metricbeatMustache = mustacheFactory.compile("metricbeat.yaml.mustache");
         try {
-            MesosExecutorDriver driver = new MesosExecutorDriver(new HumioExecutor(mustache));
+            MesosExecutorDriver driver = new MesosExecutorDriver(new HumioExecutor(filebeatMustache, metricbeatMustache));
             final Protos.Status status = driver.run();
 
             System.out.println("status = " + status);

@@ -14,7 +14,8 @@ public class ModelUtils {
                 .logFile("stderr")
                 .slaveId(task.getSlaveId())
                 .frameworkId(task.getFrameworkId())
-                .taskId(task.getId());
+                .taskId(task.getId())
+                .containerId(task.getStatuses().stream().findFirst().map(status -> status.getContainerStatus().getContainerId().getValue()).orElse(null));
         Map<String, String> humioLabels = task.getLabels().stream().filter(label -> label.getKey().startsWith("HUMIO_")).collect(Collectors.toMap(Label::getKey, Label::getValue));
         if (humioLabels.containsKey("HUMIO_MULTILINE_PATTERN")) {
             taskDetailsBuilder

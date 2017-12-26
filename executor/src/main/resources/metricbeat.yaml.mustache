@@ -1,0 +1,14 @@
+- module: http
+  metricsets: ["json"]
+  period: 10s
+  hosts: ["localhost:61001"]
+  namespace: "dcos_metrics"
+  path: "/system/v1/metrics/v0/node"
+{{#taskDetails}}
+- module: http
+  metricsets: ["json"]
+  period: 10s
+  hosts: ["localhost:61001"]
+  namespace: "dcos_metrics"
+  path: "/system/v1/metrics/v0/containers/{{containerId}}"
+{{/taskDetails}}

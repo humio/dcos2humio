@@ -4,11 +4,11 @@ import com.humio.mesos.dcos2humio.shared.model.TaskDetails;
 
 import java.util.List;
 
-public class FilebeatConfigScope {
+public class ElasticBeatConfigScope {
     private final String slaveId;
     private final List<TaskDetails> taskDetails;
 
-    public FilebeatConfigScope(String slaveId, List<TaskDetails> taskDetails) {
+    public ElasticBeatConfigScope(String slaveId, List<TaskDetails> taskDetails) {
         this.slaveId = slaveId;
         this.taskDetails = taskDetails;
     }
