@@ -34,6 +34,8 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
     protected String filebeatConfigUrl;
     @Value("${humio.metricbeat.configUrl:}")
     protected String metricbeatConfigUrl;
+    @Value("${humio.dcosAuthToken}")
+    protected String dcosAuthToken;
 
     public TaskInfoFactoryExecutor(MesosConfigProperties mesosConfig) {
         this.mesosConfig = mesosConfig;
@@ -56,6 +58,7 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                     .build())
                 .setExecutor(Protos.ExecutorInfo.newBuilder()
                     .setName("humioexecutor")
+                        .setData(ByteString.copyFromUtf8(dcosAuthToken))
                     .setExecutorId(Protos.ExecutorID.newBuilder().setValue("humioexecutor." + offer.getSlaveId()
                         .getValue()).build())
                     .setCommand(Protos.CommandInfo.newBuilder()

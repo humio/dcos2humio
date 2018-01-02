@@ -2,13 +2,31 @@
   metricsets: ["json"]
   period: 10s
   hosts: ["localhost:61001"]
-  namespace: "dcos_metrics"
+  namespace: "node_metrics"
+{{#authToken}}
+  headers:
+    Authorization: "token={{authToken}}"
+{{/authToken}}
+  fields:
+    mesos_slave_id: {{slaveId}}
   path: "/system/v1/metrics/v0/node"
+
 {{#taskDetails}}
 - module: http
   metricsets: ["json"]
   period: 10s
   hosts: ["localhost:61001"]
-  namespace: "dcos_metrics"
+  namespace: "container_metrics"
   path: "/system/v1/metrics/v0/containers/{{containerId}}"
+  namespace: "container_metrics"
+{{#authToken}}
+  headers:
+    Authorization: "token={{authToken}}"
+{{/authToken}}
+  fields:
+    mesos_slave_id: {{slaveId}}
+    mesos_framework_id: {{frameworkId}}
+    mesos_framework_name: {{frameworkName}}
+    mesos_task_id: {{taskId}}
+    {{#serviceId}}mesos_service_id: {{serviceId}}{{/serviceId}}
 {{/taskDetails}}

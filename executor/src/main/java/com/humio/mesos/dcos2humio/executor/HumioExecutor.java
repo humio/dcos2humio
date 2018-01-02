@@ -29,6 +29,7 @@ public class HumioExecutor implements Executor {
     private Mustache metricbeatMustache;
     private String slaveId;
     private List<ProcessLauncher> processes;
+    private String dcosAuthToken = null;
 
     public HumioExecutor(Mustache filebeatMustache, Mustache metricbeatMustache) {
         this.filebeatMustache = filebeatMustache;
@@ -37,6 +38,7 @@ public class HumioExecutor implements Executor {
 
     @Override
     public void registered(ExecutorDriver driver, Protos.ExecutorInfo executorInfo, Protos.FrameworkInfo frameworkInfo, Protos.SlaveInfo slaveInfo) {
+        dcosAuthToken = executorInfo.getData().toStringUtf8();
         slaveId = slaveInfo.getId().getValue();
         System.out.println("HumioExecutor.registered");
     }
@@ -154,7 +156,7 @@ public class HumioExecutor implements Executor {
     private void updateElasticBeatConfig(String fileName, List<TaskDetails> taskDetails) {
         try {
             Mustache mustache = fileName.equals(HUMIO_FILEBEAT_YAML) ? filebeatMustache : metricbeatMustache;
-            mustache.execute(new FileWriter(fileName), new ElasticBeatConfigScope(slaveId, taskDetails)).flush();
+            mustache.execute(new FileWriter(fileName), new ElasticBeatConfigScope(dcosAuthToken, slaveId, taskDetails)).flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
