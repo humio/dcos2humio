@@ -7,6 +7,8 @@ humio:
     version: "1.0-SNAPSHOT"
     url: http://${host}:8085/executor/target/executor-${humio.executor.version}.jar
   dataDir: "/var/humio/data"
+  metrics:
+    container: false
 mesos:
   framework:
     name: humio-agent

@@ -8,11 +8,13 @@ public class ElasticBeatConfigScope {
     private final String authToken;
     private final String slaveId;
     private final List<TaskDetails> taskDetails;
+    private final boolean metricsContainersEnabled;
 
-    public ElasticBeatConfigScope(String authToken, String slaveId, List<TaskDetails> taskDetails) {
+    public ElasticBeatConfigScope(String authToken, String slaveId, List<TaskDetails> taskDetails, boolean metricsContainersEnabled) {
         this.authToken = authToken;
         this.slaveId = slaveId;
         this.taskDetails = taskDetails;
+        this.metricsContainersEnabled = metricsContainersEnabled;
     }
 
     public String getSlaveId() {
@@ -25,5 +27,9 @@ public class ElasticBeatConfigScope {
 
     public List<TaskDetails> getTaskDetails() {
         return taskDetails;
+    }
+
+    public boolean isMetricsContainersEnabled() {
+        return metricsContainersEnabled;
     }
 }

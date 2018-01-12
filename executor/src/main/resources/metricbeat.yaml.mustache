@@ -1,16 +1,24 @@
-- module: http
-  metricsets: ["json"]
+- module: system
+  metricsets:
+    - cpu             # CPU usage
+    - filesystem      # File system usage for each mountpoint
+    - fsstat          # File system summary metrics
+    - load            # CPU load averages
+    - memory          # Memory usage
+    - network         # Network IO
+    - process         # Per process metrics
+    - process_summary # Process summary
+    - uptime          # System Uptime
+    - core           # Per CPU core usage
+    - diskio         # Disk IO
+    - socket         # Sockets and connection info (linux only)
+  enabled: true
   period: 10s
-  hosts: ["localhost:61001"]
-  namespace: "node_metrics"
-{{#authToken}}
-  headers:
-    Authorization: "token={{authToken}}"
-{{/authToken}}
-  fields:
-    mesos_slave_id: {{slaveId}}
-  path: "/system/v1/metrics/v0/node"
+  processes: ['.*']
+  cpu.metrics:  ["percentages"]  # The other available options are normalized_percentages and ticks.
+  core.metrics: ["percentages"]  # The other available option is ticks.
 
+{{#metricsContainersEnabled}}
 {{#taskDetails}}
 - module: http
   metricsets: ["json"]
@@ -30,3 +38,4 @@
     mesos_task_id: {{taskId}}
     {{#serviceId}}mesos_service_id: {{serviceId}}{{/serviceId}}
 {{/taskDetails}}
+{{/metricsContainersEnabled}}
