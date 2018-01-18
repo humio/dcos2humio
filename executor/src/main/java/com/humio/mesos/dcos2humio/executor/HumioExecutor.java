@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -158,7 +159,7 @@ public class HumioExecutor implements Executor {
         final List<TaskDetails> taskDetails = SerializationUtils.deserialize(data);
 
         updateElasticBeatConfig(HUMIO_FILEBEAT_YAML, taskDetails);
-        updateElasticBeatConfig(HUMIO_METRICBEAT_YAML, taskDetails);
+        updateElasticBeatConfig(HUMIO_METRICBEAT_YAML, taskDetails.stream().filter(taskDetail -> taskDetail.getContainerId() != null).collect(Collectors.toList()));
     }
 
     private void updateElasticBeatConfig(String fileName, List<TaskDetails> taskDetails) {

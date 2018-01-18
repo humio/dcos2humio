@@ -1,11 +1,11 @@
-- input_type: log
+- type: log
   paths:
   - /var/log/mesos/*.log
   fields:
     "@type": "mesosagent"
     mesos_slave_id: {{slaveId}}
 {{#taskDetails}}
-- input_type: log
+- type: log
   paths:
   {{#absolutePaths}}
   - "{{.}}"
