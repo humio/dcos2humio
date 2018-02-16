@@ -17,6 +17,8 @@
   processes: ['.*']
   cpu.metrics:  ["percentages"]  # The other available options are normalized_percentages and ticks.
   core.metrics: ["percentages"]  # The other available option is ticks.
+  fields:
+    mesos_slave_id: {{slaveId}}
 
 {{#metricsContainersEnabled}}
 {{#taskDetails}}
