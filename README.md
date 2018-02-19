@@ -92,8 +92,8 @@ Customize own configuration of beats. All variables are optional.
 
 | Environment variable         | Allowed value                       | Description                                                                                  |
 |------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------|
-| `HUMIO_FILEBEAT_CONFIGURL`   | url: http://example/filebeat.yml    | See https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-configuration.html
-| `HUMIO_METRICBEAT_CONFIGURL` | url: http://example/metricbeat.yml  | See https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-configuration.html                                 |
+| `HUMIO_FILEBEAT_CONFIGURL`   | url: http://example/filebeat.yml    | See https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-configuration.html       |
+| `HUMIO_METRICBEAT_CONFIGURL` | url: http://example/metricbeat.yml  | See https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-configuration.html   |
 
 # Task configuration<a name="taskconfiguration"></a>
 Configuration of tasks is managed via Mesos Task Labels. All labels are optional.
@@ -105,6 +105,7 @@ Configuration of tasks is managed via Mesos Task Labels. All labels are optional
 | `HUMIO_MULTILINE_PATTERN` | regex            | Label for the `multiline.pattern`               |
 | `HUMIO_MULTILINE_NEGATE`  | `true`,`false`   | Label for the `multiline.negate`                |
 | `HUMIO_MULTILINE_MATCH`   | `before`,`after` | Label for the `multiline.match`                 |
+| `HUMIO_GLOBALFIELDS_*`    | string           | Add static field on all events                  |
 
 For multiline configuration see the multiline section in the Filebeat documentation, https://www.elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html#multiline
 
