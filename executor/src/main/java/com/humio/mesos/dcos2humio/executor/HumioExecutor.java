@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -46,10 +47,9 @@ public class HumioExecutor implements Executor {
         final String[] bootConfig = executorInfo.getData().toStringUtf8().split(";");
         this.dcosAuthToken = nullOnEmpty(bootConfig[0]);
         this.metricsContainersEnabled = Boolean.parseBoolean(bootConfig[1]);
-        globalFields = Stream.of(bootConfig[2].split(","))
+        globalFields = bootConfig.length < 3 ? emptyList() : Stream.of(bootConfig[2].split(","))
                 .map(s -> s.split("="))
                 .map(strings -> new GlobalField(strings[0], strings[1]))
-                .peek(globalField -> System.out.println("globalField = " + globalField))
                 .collect(Collectors.toList());
         slaveId = slaveInfo.getId().getValue();
         System.out.println("HumioExecutor.registered");
