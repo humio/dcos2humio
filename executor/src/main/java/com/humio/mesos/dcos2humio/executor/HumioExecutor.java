@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -33,6 +34,7 @@ public class HumioExecutor implements Executor {
     private String dcosAuthToken = null;
 
     private boolean metricsContainersEnabled = false;
+    private List<GlobalField> globalFields = emptyList();
 
     public HumioExecutor(Mustache filebeatMustache, Mustache metricbeatMustache) {
         this.filebeatMustache = filebeatMustache;
@@ -44,6 +46,11 @@ public class HumioExecutor implements Executor {
         final String[] bootConfig = executorInfo.getData().toStringUtf8().split(";");
         this.dcosAuthToken = nullOnEmpty(bootConfig[0]);
         this.metricsContainersEnabled = Boolean.parseBoolean(bootConfig[1]);
+        globalFields = Stream.of(bootConfig[2].split(","))
+                .map(s -> s.split("="))
+                .map(strings -> new GlobalField(strings[0], strings[1]))
+                .peek(globalField -> System.out.println("globalField = " + globalField))
+                .collect(Collectors.toList());
         slaveId = slaveInfo.getId().getValue();
         System.out.println("HumioExecutor.registered");
     }
@@ -66,8 +73,7 @@ public class HumioExecutor implements Executor {
     public void launchTask(ExecutorDriver driver, Protos.TaskInfo task) {
         final String[] data = task.getData().toStringUtf8().split(";");
         final String humioHost = data[0];
-        final String humioDataspace =
-            data[1];
+        final String humioDataspace = data[1];
         final String humioIngestToken = data[2];
         final File dataDir = new File(data[3]);
         final File filebeatConfig = copyConfigFile(data[4], "filebeat.yaml");
@@ -165,7 +171,7 @@ public class HumioExecutor implements Executor {
     private void updateElasticBeatConfig(String fileName, List<TaskDetails> taskDetails) {
         try {
             Mustache mustache = fileName.equals(HUMIO_FILEBEAT_YAML) ? filebeatMustache : metricbeatMustache;
-            mustache.execute(new FileWriter(fileName), new ElasticBeatConfigScope(dcosAuthToken, slaveId, taskDetails, metricsContainersEnabled)).flush();
+            mustache.execute(new FileWriter(fileName), new ElasticBeatConfigScope(dcosAuthToken, slaveId, taskDetails, globalFields, metricsContainersEnabled)).flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

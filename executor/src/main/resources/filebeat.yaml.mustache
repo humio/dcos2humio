@@ -17,6 +17,7 @@
     mesos_framework_name: {{frameworkName}}
     mesos_task_id: {{taskId}}
     {{#serviceId}}mesos_service_id: {{serviceId}}{{/serviceId}}
+    {{#globalFields}}"{{name}}": "{{value}}"{{/globalFields}}
 {{#multilineEnabled}}
   multiline:
     pattern: '{{multilinePattern}}'

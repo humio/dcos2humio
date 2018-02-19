@@ -19,6 +19,7 @@
   core.metrics: ["percentages"]  # The other available option is ticks.
   fields:
     mesos_slave_id: {{slaveId}}
+    {{#globalFields}}"{{name}}": "{{value}}"{{/globalFields}}
 
 {{#metricsContainersEnabled}}
 {{#taskDetails}}
@@ -39,5 +40,6 @@
     mesos_framework_name: {{frameworkName}}
     mesos_task_id: {{taskId}}
     {{#serviceId}}mesos_service_id: {{serviceId}}{{/serviceId}}
+    {{#globalFields}}"{{name}}": "{{value}}"{{/globalFields}}
 {{/taskDetails}}
 {{/metricsContainersEnabled}}

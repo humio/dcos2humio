@@ -4,7 +4,7 @@ import com.containersolutions.mesos.scheduler.ExecutionParameters;
 import com.containersolutions.mesos.scheduler.TaskInfoFactory;
 import com.containersolutions.mesos.scheduler.config.MesosConfigProperties;
 import com.google.protobuf.ByteString;
-
+import com.humio.mesos.dcos2humio.scheduler.model.HumioConfig;
 import org.apache.mesos.Protos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +38,11 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
     protected String dcosAuthToken;
     @Value("${humio.metrics.container}")
     protected Boolean enableContainerMetrics;
+    private final HumioConfig humioConfig;
 
-    public TaskInfoFactoryExecutor(MesosConfigProperties mesosConfig) {
+    public TaskInfoFactoryExecutor(MesosConfigProperties mesosConfig, HumioConfig humioConfig) {
         this.mesosConfig = mesosConfig;
+        this.humioConfig = humioConfig;
     }
 
     @Override
@@ -51,8 +53,15 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                 .setSlaveId(offer.getSlaveId())
                 .setTaskId(Protos.TaskID.newBuilder().setValue(taskId))
                 .addAllResources(resources)
-                .setData(ByteString.copyFromUtf8(String.join(";", humioHost, humioDataspace, humioIngesttoken,
-                    humioDataDir, defaultIfEmpty(filebeatConfigUrl, " "), defaultIfEmpty(metricbeatConfigUrl, " "))))
+                .setData(ByteString.copyFromUtf8(
+                        String.join(";",
+                                humioHost,
+                                humioDataspace,
+                                humioIngesttoken,
+                                humioDataDir,
+                                defaultIfEmpty(filebeatConfigUrl, " "),
+                                defaultIfEmpty(metricbeatConfigUrl, " ")
+                        )))
                 .setLabels(Protos.Labels.newBuilder().addLabels(createLabel("HUMIO_IGNORE", "true")).build())
                 .setDiscovery(Protos.DiscoveryInfo.newBuilder()
                     .setName(applicationName)
@@ -60,7 +69,15 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                     .build())
                 .setExecutor(Protos.ExecutorInfo.newBuilder()
                     .setName("humioexecutor")
-                        .setData(ByteString.copyFromUtf8(dcosAuthToken.concat(";").concat(enableContainerMetrics.toString())))
+                        .setData(ByteString.copyFromUtf8(
+                                String.join(";",
+                                        dcosAuthToken,
+                                        enableContainerMetrics.toString(),
+                                        humioConfig.getGlobalFields().entrySet().stream()
+                                                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                                                .collect(Collectors.joining(","))
+
+                                )))
                     .setExecutorId(Protos.ExecutorID.newBuilder().setValue("humioexecutor." + offer.getSlaveId()
                         .getValue()).build())
                     .setCommand(Protos.CommandInfo.newBuilder()
@@ -69,7 +86,7 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                             .newBuilder().setValue(uri).build()).collect(Collectors.toList()))
                         .build())
                     .build())
-            .build();
+                .build();
     }
 
     private Protos.Label createLabel(String key, String value) {
