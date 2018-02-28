@@ -6,6 +6,7 @@ import lombok.Singular;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
@@ -25,6 +26,8 @@ public class TaskDetails implements Serializable {
     private boolean multilineNegate = false;
     @Builder.Default
     private String multilineMatch = "off";
+    @Singular
+    private Map<String, String> additionalFields;
     @Singular
     private List<String> logFiles;
     private String parser;

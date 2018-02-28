@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -35,7 +34,7 @@ public class HumioExecutor implements Executor {
     private String dcosAuthToken = null;
 
     private boolean metricsContainersEnabled = false;
-    private List<GlobalField> globalFields = emptyList();
+    private List<LogField> globalFields = emptyList();
 
     public HumioExecutor(Mustache filebeatMustache, Mustache metricbeatMustache) {
         this.filebeatMustache = filebeatMustache;
@@ -49,7 +48,7 @@ public class HumioExecutor implements Executor {
         this.metricsContainersEnabled = Boolean.parseBoolean(bootConfig[1]);
         globalFields = bootConfig.length < 3 ? emptyList() : Stream.of(bootConfig[2].split(","))
                 .map(s -> s.split("="))
-                .map(strings -> new GlobalField(strings[0], strings[1]))
+                .map(strings -> new LogField(strings[0], strings[1]))
                 .collect(Collectors.toList());
         slaveId = slaveInfo.getId().getValue();
         System.out.println("HumioExecutor.registered");

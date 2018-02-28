@@ -89,7 +89,14 @@ public class ElasticBeatConfigurationGenerator implements InitializingBean {
                     final TaskDetails.TaskDetailsBuilder taskDetailsBuilder = ModelUtils.from(task)
                             .frameworkName(frameworkNameMap.get(task.getFrameworkId()))
                             .type(task.getLabels().stream().filter(label -> label.getKey().equalsIgnoreCase("HUMIO_TYPE")).map(Label::getValue).findFirst().orElse("kv"))
-                            .serviceId(Optional.ofNullable(task.getDiscovery()).map(discovery -> "/" + discovery.getName()).orElse(null));
+                            .serviceId(Optional.ofNullable(task.getDiscovery()).map(discovery -> "/" + discovery.getName()).orElse(null))
+                            .additionalFields(task.getLabels().stream()
+                                    .filter(label -> label.getKey().startsWith("HUMIO_FIELD_"))
+                                    .collect(Collectors.toMap(
+                                            lbl -> lbl.getKey().substring(12),
+                                            Label::getValue
+                                    ))
+                            );
                     if (task.getLabels().stream().anyMatch(label -> label.getKey().equals("DCOS_PACKAGE_NAME") && label.getValue().equals("marathon-lb"))) {
                         taskDetailsBuilder
                                 .type("marathon-lb")
