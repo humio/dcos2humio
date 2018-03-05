@@ -1,10 +1,10 @@
 package com.humio.mesos.dcos2humio.executor;
 
-class GlobalField {
+class LogField {
     private final String name;
     private final String value;
 
-    public GlobalField(String name, String value) {
+    public LogField(String name, String value) {
         this.name = name;
         this.value = value;
     }
