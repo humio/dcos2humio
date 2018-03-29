@@ -105,7 +105,7 @@ Configuration of tasks is managed via Mesos Task Labels. All labels are optional
 | `HUMIO_MULTILINE_PATTERN` | regex            | Label for the `multiline.pattern`               |
 | `HUMIO_MULTILINE_NEGATE`  | `true`,`false`   | Label for the `multiline.negate`                |
 | `HUMIO_MULTILINE_MATCH`   | `before`,`after` | Label for the `multiline.match`                 |
-| `HUMIO_GLOBALFIELDS_*`    | string           | Add static field on all events                  |
+| `HUMIO_FIELD_*`           | string           | Add static field on all events                  |
 
 For multiline configuration see the multiline section in the Filebeat documentation, https://www.elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html#multiline
 
