@@ -93,7 +93,7 @@ public class HumioExecutor implements Executor {
                         "-E", "filebeat.config.prospectors.path=../".concat(HUMIO_FILEBEAT_YAML),
                         "-E", "filebeat.config.prospectors.reload.enabled=true",
                         "-E", "filebeat.config.prospectors.reload.period=10s",
-                        "-E", "output.elasticsearch.hosts=[\"https://" + humioHost + ":443/api/v1/dataspaces/" + humioDataspace + "/ingest/elasticsearch\"]",
+                        "-E", "output.elasticsearch.hosts=[\"" + humioHost + "/api/v1/dataspaces/" + humioDataspace + "/ingest/elasticsearch\"]",
                         "-E", "output.elasticsearch.username=" + humioIngestToken,
                         "-E", "output.elasticsearch.compression_level=5",
                         "-E", "output.elasticsearch.bulk_max_size=200"
@@ -105,7 +105,7 @@ public class HumioExecutor implements Executor {
                         "-E", "metricbeat.config.modules.path=../".concat(HUMIO_METRICBEAT_YAML),
                         "-E", "metricbeat.config.modules.reload.enabled=true",
                         "-E", "metricbeat.config.modules.reload.period=10s",
-                        "-E", "output.elasticsearch.hosts=[\"https://" + humioHost + ":443/api/v1/dataspaces/" + humioDataspace + "/ingest/elasticsearch\"]",
+                        "-E", "output.elasticsearch.hosts=[\"" + humioHost + "/api/v1/dataspaces/" + humioDataspace + "/ingest/elasticsearch\"]",
                         "-E", "output.elasticsearch.username=" + humioIngestToken
                 )
         );
