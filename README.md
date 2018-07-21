@@ -87,6 +87,12 @@ The least recommended Marathon configuration should look something like this.
 
 Don't forget to replace `{{humio.[host|dataspace|ingestToken]}}` as explained in [Universe](#Universe)
 
+## Addition configuration parameters
+
+| Environment variable         | Allowed value | Description                                   |
+|------------------------------|---------------|-----------------------------------------------|
+| `HUMIO_GLOBALFIELDS_*`       | String        | Add static field to all log and metric events |
+
 # Elastic beat configuration
 Customize own configuration of beats. All variables are optional.
 
