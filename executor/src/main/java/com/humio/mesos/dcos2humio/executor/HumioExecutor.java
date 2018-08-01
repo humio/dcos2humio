@@ -87,8 +87,8 @@ public class HumioExecutor implements Executor {
 
         processes = asList(
                 new ProcessLauncher(filebeatWorkingDir,
-                        "filebeat-6.1.1-linux-x86_64/filebeat", //TODO: upgrade to 6.1.1. Parametize?
-                        "-c", filebeatConfig != null ? filebeatConfig.getAbsolutePath() : "filebeat-6.1.1-linux-x86_64/filebeat.yml",
+                        "filebeat-6.3.2-linux-x86_64/filebeat", //TODO: Parametize?
+                        "-c", filebeatConfig != null ? filebeatConfig.getAbsolutePath() : "filebeat-6.3.2-linux-x86_64/filebeat.yml",
                         "-path.data=" + filebeatDataDir.getAbsolutePath(),
                         "-E", "filebeat.config.prospectors.path=../".concat(HUMIO_FILEBEAT_YAML),
                         "-E", "filebeat.config.prospectors.reload.enabled=true",
@@ -98,9 +98,9 @@ public class HumioExecutor implements Executor {
                         "-E", "output.elasticsearch.compression_level=5",
                         "-E", "output.elasticsearch.bulk_max_size=200"
                 ),
-                new ProcessLauncher(metricbeatWorkingDir, "metricbeat-6.1.1-linux-x86_64/metricbeat",
+                new ProcessLauncher(metricbeatWorkingDir, "metricbeat-6.3.2-linux-x86_64/metricbeat",
                         "-path.data=" + metricbeatDataDir.getAbsolutePath(),
-                        "-c", metricbeatConfig != null ? metricbeatConfig.getAbsolutePath() : "metricbeat-6.1.1-linux-x86_64/metricbeat.yml",
+                        "-c", metricbeatConfig != null ? metricbeatConfig.getAbsolutePath() : "metricbeat-6.3.2-linux-x86_64/metricbeat.yml",
                         "-E", "name=" + slaveId,
                         "-E", "metricbeat.config.modules.path=../".concat(HUMIO_METRICBEAT_YAML),
                         "-E", "metricbeat.config.modules.reload.enabled=true",
