@@ -2,7 +2,7 @@
   "container": {
     "docker": {
       "forcePullImage": true,
-      "image": "humio/universe:<<DRONE_BUILD_NUMBER>>",
+      "image": "humio/universe:1.0-beta-<<DRONE_BUILD_NUMBER>>",
       "privileged": false
     },
     "portMappings": [
