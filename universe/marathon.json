@@ -2,7 +2,7 @@
   "container": {
     "docker": {
       "forcePullImage": true,
-      "image": "humio/dcos-universe:<<DRONE_BUILD_NUMBER>>",
+      "image": "humio/universe:<<DRONE_BUILD_NUMBER>>",
       "privileged": false
     },
     "portMappings": [
@@ -30,7 +30,7 @@
       "timeoutSeconds": 20
     }
   ],
-  "id": "/humio/universe",
+  "id": "/humio/dcos-universe",
   "instances": 2,
   "killSelection": "YOUNGEST_FIRST",
   "labels": {
