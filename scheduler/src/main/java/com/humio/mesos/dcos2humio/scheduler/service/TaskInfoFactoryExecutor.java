@@ -81,7 +81,7 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                     .setExecutorId(Protos.ExecutorID.newBuilder().setValue("humioexecutor." + offer.getSlaveId()
                         .getValue()).build())
                     .setCommand(Protos.CommandInfo.newBuilder()
-                        .setValue("jre*/bin/java -jar executor-*.jar")
+                        .setValue("server-jre*/bin/java -jar executor-*.jar")
                         .addAllUris(mesosConfig.getUri().stream().map(uri -> Protos.CommandInfo.URI
                             .newBuilder().setValue(uri).build()).collect(Collectors.toList()))
                         .build())
