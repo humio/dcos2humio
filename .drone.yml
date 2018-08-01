@@ -49,6 +49,7 @@ pipeline:
           }
         }' > universe/packages/H/humio-agent/1/resources.json
       - mkdir -p universe/target
+      - pip3 install jsonschema
       - universe/gen_universe.py --repository universe/packages --out-dir universe/target
     when:
       branch: master
