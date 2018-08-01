@@ -24,7 +24,7 @@
       "intervalSeconds": 60,
       "ipProtocol": "IPv4",
       "maxConsecutiveFailures": 3,
-      "path": "/repo/repo-empty-v3.json",
+      "path": "/repo-empty-v3.json",
       "portIndex": 0,
       "protocol": "MESOS_HTTP",
       "timeoutSeconds": 20
