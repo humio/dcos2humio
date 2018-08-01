@@ -53,7 +53,7 @@ pipeline:
           "packagingVersion": "3.0",
           "name": "humio-agent",
           "framework": true,
-          "description": "Log management for developers. Like tail and grep with aggregations and graphs built-in.\\n\\nMake sure you have created an account with a dataspace at https://humio.com",
+          "description": "Log management for developers. Like tail and grep with aggregations and graphs built-in. Make sure you have created an account with a dataspace at https://humio.com",
           "version": "1.0-beta-$${DRONE_BUILD_NUMBER}",
           "scm": "http://github.com/humio/dcos2humio",
           "maintainer": "martin@mwl.dk",
