@@ -4,6 +4,9 @@
   fields:
     "@type": "mesosagent"
     mesos_slave_id: {{slaveId}}
+    {{#globalFields}}
+    "{{name}}": "{{value}}"
+    {{/globalFields}}
 {{#taskDetails}}
 - type: log
   paths:
