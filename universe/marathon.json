@@ -1,0 +1,58 @@
+{
+  "container": {
+    "docker": {
+      "forcePullImage": true,
+      "image": "humio/dcos-universe:<<DRONE_BUILD_NUMBER>>",
+      "privileged": false
+    },
+    "portMappings": [
+      {
+        "containerPort": 80,
+        "hostPort": 0,
+        "labels": {},
+        "protocol": "tcp",
+      }
+    ],
+    "type": "MESOS",
+    "volumes": []
+  },
+  "cpus": 0.1,
+  "healthChecks": [
+    {
+      "delaySeconds": 15,
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60,
+      "ipProtocol": "IPv4",
+      "maxConsecutiveFailures": 3,
+      "path": "/repo/repo-empty-v3.json",
+      "portIndex": 0,
+      "protocol": "MESOS_HTTP",
+      "timeoutSeconds": 20
+    }
+  ],
+  "id": "/humio/universe",
+  "instances": 2,
+  "killSelection": "YOUNGEST_FIRST",
+  "labels": {
+    "HAPROXY_0_REDIRECT_TO_HTTPS": "true",
+    "HAPROXY_0_USE_HSTS": "true",
+    "HAPROXY_0_VHOST": "dcos-universe.humio.com",
+    "HAPROXY_GROUP": "external",
+    "HUMIO_TYPE": "nginx-accesslog"
+  },
+  "mem": 128,
+  "networks": [
+    {
+      "mode": "container/bridge"
+    }
+  ],
+  "requirePorts": false,
+  "unreachableStrategy": {
+    "expungeAfterSeconds": 0,
+    "inactiveAfterSeconds": 0
+  },
+  "upgradeStrategy": {
+    "maximumOverCapacity": 1,
+    "minimumHealthCapacity": 1
+  }
+}

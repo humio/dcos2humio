@@ -63,3 +63,12 @@ pipeline:
     tags: 1.0-beta-${DRONE_BUILD_NUMBER}
     when:
       branch: master
+
+  deploy:
+    image: e20co/drone-marathon
+    server: http://marathon.mesos:8080
+    marathonfile: universe/marathon.json
+    values:
+      - drone_build_number
+    when:
+      branch: master
