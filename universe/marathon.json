@@ -31,7 +31,7 @@
     }
   ],
   "id": "/humio/dcos-universe",
-  "instances": 2,
+  "instances": 1,
   "killSelection": "YOUNGEST_FIRST",
   "labels": {
     "HAPROXY_0_REDIRECT_TO_HTTPS": "true",
