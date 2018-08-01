@@ -33,5 +33,17 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>humio-releases</id>
+            <name>Humio releases</name>
+            <url>https://repo.humio.com/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>humio-snapshots</id>
+            <name>Humio snapshots</name>
+            <url>https://repo.humio.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>
