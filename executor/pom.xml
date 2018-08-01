@@ -66,12 +66,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>bintray-humio-Maven</id>
-            <name>humio-Maven</name>
-            <url>https://api.bintray.com/maven/humio/Maven/agent/;publish=1</url>
-        </repository>
-    </distributionManagement>
 </project>
