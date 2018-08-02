@@ -88,6 +88,7 @@ public class HumioExecutor implements Executor {
         processes = asList(
                 new ProcessLauncher(filebeatWorkingDir,
                         "filebeat-6.3.2-linux-x86_64/filebeat", //TODO: Parametize?
+                        "-e",
                         "-c", filebeatConfig != null ? filebeatConfig.getAbsolutePath() : "filebeat-6.3.2-linux-x86_64/filebeat.yml",
                         "-path.data=" + filebeatDataDir.getAbsolutePath(),
                         "-E", "filebeat.config.prospectors.path=../".concat(HUMIO_FILEBEAT_YAML),
@@ -99,6 +100,7 @@ public class HumioExecutor implements Executor {
                         "-E", "output.elasticsearch.bulk_max_size=200"
                 ),
                 new ProcessLauncher(metricbeatWorkingDir, "metricbeat-6.3.2-linux-x86_64/metricbeat",
+                        "-e",
                         "-path.data=" + metricbeatDataDir.getAbsolutePath(),
                         "-c", metricbeatConfig != null ? metricbeatConfig.getAbsolutePath() : "metricbeat-6.3.2-linux-x86_64/metricbeat.yml",
                         "-E", "name=" + slaveId,
