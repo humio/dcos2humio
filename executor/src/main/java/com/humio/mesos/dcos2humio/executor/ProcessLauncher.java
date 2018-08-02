@@ -48,7 +48,7 @@ public class ProcessLauncher {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 //todo: fatal
-                throw new RuntimeException("Failed to kill orphane child.", e);
+                throw new RuntimeException("Failed to kill orphaned child.", e);
             }
         }
     }
