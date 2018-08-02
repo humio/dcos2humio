@@ -11,7 +11,17 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mesos-starter.version>build-4</mesos-starter.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>development</id>
+            <properties>
+                <mesos-starter.version>1.0-SNAPSHOT</mesos-starter.version>
+            </properties>
+        </profile>
+    </profiles>
 
     <modules>
         <module>shared</module>

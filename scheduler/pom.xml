@@ -32,7 +32,7 @@
         <dependency>
             <groupId>com.containersolutions.mesos</groupId>
             <artifactId>spring-boot-starter-mesos</artifactId>
-            <version>build-3</version>
+            <version>${mesos-starter.version}</version>
         </dependency>
         <dependency>
             <groupId>com.humio.mesos.dcos2humio</groupId>
