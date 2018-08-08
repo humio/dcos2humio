@@ -97,14 +97,17 @@ public class ElasticBeatConfigurationGenerator implements InitializingBean {
                                             Label::getValue
                                     ))
                             );
-                    if (task.getLabels().stream().anyMatch(label -> label.getKey().equals("DCOS_PACKAGE_NAME") && label.getValue().equals("marathon-lb"))) {
-                        taskDetailsBuilder
-                                .type("marathon-lb")
-                                .multilineNegate(true)
-                                .multilineMatch("after")
-                                .multilinePattern("^\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3}\\s")
-                        ;
-                    }
+                    task.getLabels().stream().filter(label -> label.getKey().equals("DCOS_PACKAGE_NAME")).findFirst().map(Label::getValue).ifPresent(dcosPackageName -> {
+                        if ("marathon-lb".equals(dcosPackageName)) {
+                            taskDetailsBuilder
+                                    .type("marathon-lb")
+                                    .multilineNegate(true)
+                                    .multilineMatch("after")
+                                    .multilinePattern("^\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3}\\s")
+                            ;
+
+                        }
+                    });
                     return taskDetailsBuilder.build();
                 })
                 .collect(Collectors.groupingBy(TaskDetails::getSlaveId));
