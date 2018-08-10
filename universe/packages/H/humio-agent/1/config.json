@@ -16,6 +16,10 @@
           "description": "Humio ingest token",
           "type": "string"
         },
+        "globalFields": {
+          "description": "key:value list of global fields added to all events, separated by a semicolon (;). I.e. \"environment:production; owner: Ben\"",
+          "type": "string"
+        },
         "dcosAuthenticationToken": {
           "description": "DC/OS authentication token",
           "type": "string"
