@@ -13,9 +13,9 @@ mesos:
   framework:
     name: humio-agent
   role: "slave_public"
-  master: leader.mesos:5050
+  master: master.mesos:5050
   zookeeper:
-    server: leader.mesos:2181
+    server: master.mesos:2181
   resources:
     distinctSlave: true
     cpus: 0.1
