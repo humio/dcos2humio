@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
@@ -72,7 +73,7 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                         .setData(ByteString.copyFromUtf8(
                                 String.join(";",
                                         dcosAuthToken,
-                                        enableContainerMetrics.toString(),
+                                        Optional.ofNullable(enableContainerMetrics).orElse(Boolean.FALSE).toString(),
                                         humioConfig.getGlobalFields().entrySet().stream()
                                                 .map(entry -> entry.getKey() + "=" + entry.getValue())
                                                 .collect(Collectors.joining(","))
