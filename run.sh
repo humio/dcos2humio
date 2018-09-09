@@ -97,7 +97,7 @@ docker run --name="scheduler" -d -p 5005:5005 --restart=always \
   -e MESOS_ZOOKEEPER_SERVER=$(jot -s "," -w "zk-%g:2181" - 1 $zookeeper_nodes) \
   --expose=5005 \
   -v $(pwd)/scheduler/target/:/target \
-  "mesosphere/mesos:${mesos_version}" java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005 -jar /target/scheduler-1.0-SNAPSHOT.jar > /dev/null
+  "mesosphere/mesos:${mesos_version}" java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /target/scheduler-1.0-SNAPSHOT.jar > /dev/null
 echo ". DONE"
 ### SCHEDULER ##########################################################################################################
 

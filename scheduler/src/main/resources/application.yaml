@@ -11,7 +11,7 @@ humio:
     container: false
 mesos:
   framework:
-    name: humio-agent
+    name: ${spring.application.name}
   role: "slave_public"
   master: master.mesos:5050
   zookeeper:
