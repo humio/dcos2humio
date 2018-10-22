@@ -25,7 +25,7 @@ import static java.util.Collections.emptyList;
 public class HumioExecutor implements Executor {
     private static final String HUMIO_FILEBEAT_YAML = "config/filebeat.humio.yaml";
     private static final String HUMIO_METRICBEAT_YAML = "config/metricbeat.humio.yaml";
-    private static final String BEAT_VERSION = "6.3.2";
+    private static final String BEAT_VERSION = "6.4.2";
 
     AtomicBoolean runningFlag = new AtomicBoolean(true);
     private Mustache filebeatMustache;
