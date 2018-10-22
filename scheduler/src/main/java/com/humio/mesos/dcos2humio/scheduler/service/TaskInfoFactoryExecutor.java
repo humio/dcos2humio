@@ -52,7 +52,7 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
         return Protos.TaskInfo.newBuilder()
                 .setName(applicationName + ".task")
                 .setSlaveId(offer.getSlaveId())
-                .setTaskId(Protos.TaskID.newBuilder().setValue(taskId))
+                .setTaskId(Protos.TaskID.newBuilder().setValue("humio-agent.".concat(taskId)))
                 .addAllResources(resources)
                 .setData(ByteString.copyFromUtf8(
                         String.join(";",
@@ -63,7 +63,7 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                                 defaultIfEmpty(filebeatConfigUrl, " "),
                                 defaultIfEmpty(metricbeatConfigUrl, " ")
                         )))
-                .setLabels(Protos.Labels.newBuilder().addLabels(createLabel("HUMIO_IGNORE", "true")).build())
+                .setLabels(Protos.Labels.newBuilder().addLabels(createLabel("HUMIO_LOGFILES", "stderr;stdout;filebeat/stderr;metricbeat/stderr")).build())
                 .setDiscovery(Protos.DiscoveryInfo.newBuilder()
                     .setName(applicationName)
                     .setVisibility(Protos.DiscoveryInfo.Visibility.FRAMEWORK)

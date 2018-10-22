@@ -114,12 +114,11 @@ public class ElasticBeatConfigurationGenerator implements InitializingBean {
     }
 
     private boolean wasTaskRecentlyRunning(Task task) {
-        if (task.getState().equals("TASK_RUNNING")) {
+        if (task.getState().equals("TASK_RUNNING") || task.getState().equals("TASK_STAGING")) {
             return true;
         }
         final Instant deadline = clock.instant().minus(Duration.ofHours(1));
         return Instant.ofEpochSecond(task.getStatuses().get(task.getStatuses().size() - 1).getTimestamp().longValue()).isAfter(deadline);
-
     }
 
     private void pushConfig(String slaveId, List<TaskDetails> taskDetails) {

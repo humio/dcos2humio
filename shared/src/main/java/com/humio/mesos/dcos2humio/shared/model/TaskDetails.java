@@ -3,6 +3,7 @@ package com.humio.mesos.dcos2humio.shared.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,6 +19,7 @@ public class TaskDetails implements Serializable {
     private String frameworkId;
     private String frameworkName;
     private String taskId;
+    private String executorId;
     private String containerId;
     private String serviceId;
 
@@ -39,7 +41,7 @@ public class TaskDetails implements Serializable {
 
     public List<String> getAbsolutePaths() {
         return logFiles.stream()
-                .map(logFile -> "/var/lib/mesos/slave/slaves/" + slaveId + "/frameworks/" + frameworkId + "/executors/" + taskId + "/runs/latest/" + logFile)
+                .map(logFile -> "/var/lib/mesos/slave/slaves/" + slaveId + "/frameworks/" + frameworkId + "/executors/" + StringUtils.defaultIfBlank(executorId, taskId) + "/runs/latest/" + logFile)
                 .collect(Collectors.toList());
     }
 
