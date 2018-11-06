@@ -106,6 +106,24 @@ public class ElasticBeatConfigurationGenerator implements InitializingBean {
                                     .multilinePattern("^\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3}\\s")
                             ;
 
+                        } else if ("kafka".equals(dcosPackageName)) {
+                            taskDetailsBuilder
+                                    .type("marathon-lb")
+                                    .multilineNegate(true)
+                                    .multilineMatch("after")
+                                    .multilinePattern("^\\w+?\\s+\\d{4}")
+                            ;
+
+                        }
+                    });
+                    task.getLabels().stream().filter(label -> label.getKey().equals("task_type")).findFirst().map(Label::getValue).ifPresent(taskType -> {
+                        if ("kafka".equals(taskType)) {
+                            taskDetailsBuilder
+                                    .type("marathon-lb")
+                                    .multilineNegate(true)
+                                    .multilineMatch("after")
+                                    .multilinePattern("^\\[\\S+\\s\\S+]\\s\\S+\\s")
+                            ;
                         }
                     });
                     return taskDetailsBuilder.build();

@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,6 +51,10 @@ public class ElasticBeatConfigurationGeneratorTest {
         return objectMapper.readValue(ElasticBeatConfigurationGeneratorTest.class.getResourceAsStream("/state.json"), State.class);
     }
 
+    private State readKafka() throws java.io.IOException {
+        return objectMapper.readValue(ElasticBeatConfigurationGeneratorTest.class.getResourceAsStream("/kafka-state.json"), State.class);
+    }
+
     @Test
     public void tasksAreBeingSentToSlaves() throws Exception {
         generator.pushState(read());
@@ -63,16 +68,19 @@ public class ElasticBeatConfigurationGeneratorTest {
 
     @Test
     public void willIncludeActiveTasks() throws Exception {
+        generator.pushState(read());
         assertThat(getAllTaskIds()).contains("active-framework-2.active-task");
     }
 
     @Test
     public void willNotIncludeIgnoredTasks() throws Exception {
+        generator.pushState(read());
         assertThat(getAllTaskIds()).doesNotContain("active-framework-2.active-ignored-task");
     }
 
     @Test
     public void willNotIncludeVeryOldCompletedTasks() throws Exception {
+        generator.pushState(read());
         assertThat(getAllTaskIds()).doesNotContain(
                 "active-framework-1.ancient-finished-task",
                 "active-framework-2.ancient-killed-scheduler-task",
@@ -82,11 +90,13 @@ public class ElasticBeatConfigurationGeneratorTest {
 
     @Test
     public void willIncludeTasksOfRecentCompletedFrameworks() throws Exception {
+        generator.pushState(read());
         assertThat(getAllTaskIds()).contains("completed-framework-1.recent-killed-task");
     }
 
     @Test
     public void willIncludeRecentCompletedTasks() throws Exception {
+        generator.pushState(read());
         assertThat(getAllTaskIds()).contains(
                 "active-framework-1.recent-finished-task",
                 "active-framework-2.recent-killed-scheduler-task",
@@ -114,7 +124,6 @@ public class ElasticBeatConfigurationGeneratorTest {
     }
 
     private List<String> getAllTaskIds() throws java.io.IOException {
-        generator.pushState(read());
         ArgumentCaptor<byte[]> dataArgumentCaptor = ArgumentCaptor.forClass(byte[].class);
         verify(scheduler, atLeastOnce()).sendFrameworkMessage(any(), any(), dataArgumentCaptor.capture());
         return dataArgumentCaptor.getAllValues().stream()
@@ -122,5 +131,34 @@ public class ElasticBeatConfigurationGeneratorTest {
                 .flatMap(Collection::stream)
                 .map(TaskDetails::getTaskId)
                 .collect(Collectors.toList());
+    }
+
+    private List<TaskDetails> getAllTaskDetails() throws java.io.IOException {
+        ArgumentCaptor<byte[]> dataArgumentCaptor = ArgumentCaptor.forClass(byte[].class);
+        verify(scheduler, atLeastOnce()).sendFrameworkMessage(any(), any(), dataArgumentCaptor.capture());
+        return dataArgumentCaptor.getAllValues().stream()
+                .map(ElasticBeatConfigurationGeneratorTest::parse)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    @Test
+    public void willTreatKafkaScheduler() throws Exception {
+        generator.pushState(readKafka());
+        final List<TaskDetails> taskDetails = getAllTaskDetails();
+
+        final TaskDetails schedulerTaskDetails = taskDetails.stream().filter(task -> task.getTaskId().startsWith("kafka.")).findFirst().get();
+
+        assertThat(schedulerTaskDetails.getMultilinePattern()).isEqualTo("^\\w+?\\s+\\d{4}");
+    }
+
+    @Test
+    public void willTreatKafkaBrokers() throws Exception {
+        generator.pushState(readKafka());
+        final List<TaskDetails> taskDetails = getAllTaskDetails();
+
+        final TaskDetails schedulerTaskDetails = taskDetails.stream().filter(task -> task.getTaskId().startsWith("kafka-0-broker__")).findFirst().get();
+
+        assertThat(schedulerTaskDetails.getMultilinePattern()).isEqualTo("^\\[\\S+\\s\\S+]\\s\\S+\\s");
     }
 }
