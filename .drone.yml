@@ -1,10 +1,13 @@
-pipeline:
-  publish:
+kind: pipeline
+name: default
+
+steps:
+  - name: publish
     image: maven:3.5-jdk-8
     environment:
-      - MAVEN_USERNAME=drone
-    secrets:
-      - maven_password
+      MAVEN_USERNAME: drone
+      MAVEN_PASSWORD:
+        from_secret: maven_password
     commands:
       - mkdir -p ~/.m2
       - >
@@ -28,7 +31,7 @@ pipeline:
     when:
       branch: master
 
-  prepare-universe:
+  - name: prepare-universe
     image: python:3-stretch
     commands:
       - >
@@ -75,20 +78,25 @@ pipeline:
     when:
       branch: master
 
-  publish-universe-docker:
+  - name: publish-universe-docker
     image: plugins/docker
-    secrets: [ docker_username, docker_password ]
-    repo: humio/universe
-    dockerfile: universe/Dockerfile
-    tags: 1.0-beta-${DRONE_BUILD_NUMBER}
+    settings:
+      repo: humio/universe
+      tags:
+        - 1.0-beta-${DRONE_BUILD_NUMBER}
+      username: cihumio
+      password:
+        from_secret: docker_password
+      dockerfile: universe/Dockerfile
     when:
       branch: master
 
-  deploy:
+  - name: deploy
     image: e20co/drone-marathon
-    server: http://marathon.mesos:8080
-    marathonfile: universe/marathon.json
-    values:
-      - drone_build_number
+    settings:
+      server: http://marathon.mesos:8080
+      marathonfile: universe/marathon.json
+      values:
+        - drone_build_number
     when:
       branch: master
