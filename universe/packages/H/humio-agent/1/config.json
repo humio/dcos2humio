@@ -27,12 +27,18 @@
         "containerMetricsEnabled": {
           "description": "Enabled pulling container metrics from DC/OS",
           "type": "boolean"
+        },
+        "agents": {
+          "description": "Agents to deploy on all cluster agents. Comma (,) separated list of \"filebeat\", \"metricbeat\" or simply \"all\"",
+          "type": "string",
+          "default": "all"
         }
       },
       "required": [
         "host",
         "dataspace",
-        "ingestToken"
+        "ingestToken",
+        "agents"
       ],
       "type": "object"
     },

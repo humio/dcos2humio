@@ -61,7 +61,8 @@ public class TaskInfoFactoryExecutor implements TaskInfoFactory {
                                 humioIngesttoken,
                                 humioDataDir,
                                 defaultIfEmpty(filebeatConfigUrl, " "),
-                                defaultIfEmpty(metricbeatConfigUrl, " ")
+                                defaultIfEmpty(metricbeatConfigUrl, " "),
+                                humioConfig.getAgents().stream().collect(Collectors.joining(","))
                         )))
                 .setLabels(Protos.Labels.newBuilder().addLabels(createLabel("HUMIO_LOGFILES", "stderr;stdout;filebeat/stderr;metricbeat/stderr")).build())
                 .setDiscovery(Protos.DiscoveryInfo.newBuilder()

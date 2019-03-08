@@ -9,6 +9,8 @@ humio:
   dataDir: "/var/humio/data"
   metrics:
     container: false
+  agents:
+    - all
 mesos:
   framework:
     name: ${spring.application.name}

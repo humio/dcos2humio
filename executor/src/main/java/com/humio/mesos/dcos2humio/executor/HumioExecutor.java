@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -83,11 +84,18 @@ public class HumioExecutor implements Executor {
         final File filebeatWorkingDir = new File(".", "filebeat");
         final File metricbeatWorkingDir = new File(".", "metricbeat");
 
+        final Set<String> enabledAgents = Stream.of(data[6].split(","))
+                .map(String::trim)
+                .collect(Collectors.toSet());
+        final boolean enableAllAgents = enabledAgents.contains("all") || enabledAgents.isEmpty();
+
         updateElasticBeatConfig(HUMIO_FILEBEAT_YAML, emptyList());
         updateElasticBeatConfig(HUMIO_METRICBEAT_YAML, emptyList());
 
+
         processes = asList(
                 new ProcessLauncher(filebeatWorkingDir,
+                        enableAllAgents || enabledAgents.contains("filebeatbeat"),
                         "filebeat-" + BEAT_VERSION + "-linux-x86_64/filebeat",
                         "-e",
                         "-c", filebeatConfig != null ? filebeatConfig.getAbsolutePath() : "filebeat-" + BEAT_VERSION + "-linux-x86_64/filebeat.yml",
@@ -100,7 +108,9 @@ public class HumioExecutor implements Executor {
                         "-E", "output.elasticsearch.compression_level=5",
                         "-E", "output.elasticsearch.bulk_max_size=200"
                 ),
-                new ProcessLauncher(metricbeatWorkingDir, "metricbeat-" + BEAT_VERSION + "-linux-x86_64/metricbeat",
+                new ProcessLauncher(metricbeatWorkingDir,
+                        enableAllAgents || enabledAgents.contains("metricbeat"),
+                        "metricbeat-" + BEAT_VERSION + "-linux-x86_64/metricbeat",
                         "-e",
                         "-path.data=" + metricbeatDataDir.getAbsolutePath(),
                         "-c", metricbeatConfig != null ? metricbeatConfig.getAbsolutePath() : "metricbeat-" + BEAT_VERSION + "-linux-x86_64/metricbeat.yml",
@@ -119,6 +129,7 @@ public class HumioExecutor implements Executor {
             AtomicBoolean isHealthy = new AtomicBoolean(false);
             while (runningFlag.get()) {
                 processes.stream()
+                        .filter(ProcessLauncher::isEnabled)
                         .filter(ProcessLauncher::isNotRunning)
                         .peek(processLauncher -> {
                             if (processLauncher.hasFinished()) {

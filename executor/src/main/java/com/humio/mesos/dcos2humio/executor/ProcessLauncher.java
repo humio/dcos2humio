@@ -5,12 +5,9 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static java.util.Arrays.asList;
 
 public class ProcessLauncher {
+    private boolean enabled;
     private final String[] commandAndArgs;
     private final File runtimeDir;
     private final File pidFile;
@@ -18,7 +15,8 @@ public class ProcessLauncher {
     private final File errorLog;
     private Process process;
 
-    public ProcessLauncher(File runtimeDir, String... commandAndArgs) {
+    public ProcessLauncher(File runtimeDir, boolean enabled, String... commandAndArgs) {
+        this.enabled = enabled;
         this.runtimeDir = runtimeDir;
         pidFile = new File(runtimeDir, "pid");
         outputLog = new File(runtimeDir, "stdout");
@@ -74,6 +72,10 @@ public class ProcessLauncher {
 
     public boolean isRunning() {
         return process != null && process.isAlive();
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public boolean isNotRunning() {

@@ -19,9 +19,10 @@ Configuration parameters for user of the dcos CLI tool
 
 | Property            | Description                                                                 |
 |---------------------|-----------------------------------------------------------------------------|
-| `humio.host`        | Hostname of Humio instance, i.e. `go.humio.com`                             |
+| `humio.host`        | Hostname of Humio instance, i.e. `https://cloud.humio.com:443`              |
 | `humio.dataspace`   | Dataspace on Humio instance                                                 |
 | `humio.ingestToken` | Ingest Token of dataspace                                                   |
+| `humio.agents`      | `,`-list of agents to enable on all DCOS-agents. `all` to enable all agents |
 | `service.name`      | DC/OS service name                                                          |
 | `node.cpus`         | Amount of CPUs allocated to Humio agents on each node                       |
 | `node.mem`          | Amount of memory allocated to Humio agents on each node                     |
@@ -112,6 +113,7 @@ Configuration of tasks is managed via Mesos Task Labels. All labels are optional
 | `HUMIO_MULTILINE_NEGATE`  | `true`,`false`   | Label for the `multiline.negate`                |
 | `HUMIO_MULTILINE_MATCH`   | `before`,`after` | Label for the `multiline.match`                 |
 | `HUMIO_FIELD_*`           | string           | Add static field on all events                  |
+| `HUMIO_AGNETS`            | list of ,-Strings| List of agents to enable                        |
 
 For multiline configuration see the multiline section in the Filebeat documentation, https://www.elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html#multiline
 
