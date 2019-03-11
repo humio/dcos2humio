@@ -98,7 +98,7 @@ public class HumioExecutor implements Executor {
 
         processes = asList(
                 new ProcessLauncher(filebeatWorkingDir,
-                        enableAllAgents || enabledAgents.contains("filebeatbeat"),
+                        enableAllAgents || enabledAgents.contains("filebeat"),
                         "filebeat-" + BEAT_VERSION + "-linux-x86_64/filebeat",
                         "-e",
                         "-c", filebeatConfig != null ? filebeatConfig.getAbsolutePath() : "filebeat-" + BEAT_VERSION + "-linux-x86_64/filebeat.yml",
