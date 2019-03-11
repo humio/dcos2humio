@@ -148,7 +148,9 @@ public class HumioExecutor implements Executor {
                     e.printStackTrace();
                 }
 
-                final boolean currentHealth = processes.stream().anyMatch(ProcessLauncher::isHealthy);
+                final boolean currentHealth = processes.stream()
+                        .filter(ProcessLauncher::isEnabled)
+                        .anyMatch(ProcessLauncher::isHealthy);
                 if (currentHealth != isHealthy.get()) {
                     sendStatusUpdate(driver, task, Protos.TaskState.TASK_RUNNING, currentHealth);
                 }
