@@ -72,7 +72,9 @@ public class HumioExecutor implements Executor {
 
     @Override
     public void launchTask(ExecutorDriver driver, Protos.TaskInfo task) {
-        final String[] data = task.getData().toStringUtf8().split(";");
+        final String taskData = task.getData().toStringUtf8();
+        System.out.println("Starting executor with taskData=" + taskData);
+        final String[] data = taskData.split(";");
         final String humioHost = data[0];
         final String humioDataspace = data[1];
         final String humioIngestToken = data[2];
@@ -88,6 +90,7 @@ public class HumioExecutor implements Executor {
                 .map(String::trim)
                 .collect(Collectors.toSet());
         final boolean enableAllAgents = enabledAgents.contains("all") || enabledAgents.isEmpty();
+        System.out.println("EnablingAgents=" + enabledAgents.stream().collect(Collectors.joining(",")));
 
         updateElasticBeatConfig(HUMIO_FILEBEAT_YAML, emptyList());
         updateElasticBeatConfig(HUMIO_METRICBEAT_YAML, emptyList());
